@@ -1,0 +1,108 @@
+/*HEADER BAŞLANGIÇ*/
+header {
+  border-bottom: 1px solid #dee0ea;
+}
+.global-notification {
+  background-color: black;
+  color: white;
+  padding: 14px 0;
+  text-align: center;
+  font-size: 16px;
+}
+.header-row {
+  height: 90px;
+  display: flex;
+  align-items: center;
+}
+.header-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/*HEADER LEFT BAŞLANGIÇ*/
+.header-left {
+  display: flex;
+  align-items: center;
+  margin-left: -20px;
+}
+.header-left .logo img {
+  height: 70px;
+  width: auto;
+  object-fit: contain;
+  display: flex;
+}
+
+/*HEADER CENTER BAŞLANGIÇ*/
+.header-center .navigation .menu-list {
+  display: flex;
+  column-gap: 40px;
+  align-items: center;
+}
+.header-center .menu-list .menu-list-item{
+    display: flex;
+}
+.header-center .menu-list .menu-link {
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.2;
+  position: relative;
+}
+.header-center .menu-list .menu-link::after {
+  content: "";
+  width: 0;
+  height: 1px;
+  background-color: black;
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  transition: 0.3s ease width;
+}
+.header-center .menu-list .menu-list-item:hover .menu-link::after {
+  width: 100%;
+}
+.header-center .menu-list i {
+  font-size: 16px;
+  margin-left: 1px;
+}
+
+/*HEADER RIGHT BAŞLANGIÇ*/
+.header-right .header-right-links {
+  display: flex;
+  column-gap: 20px;
+  align-items: center;
+  font-size: 22px;
+}
+.header-right .toggle-button {
+  border: none;
+  background-color: transparent;
+}
+.header-right i {
+  display: flex;
+  flex-direction: column;
+}
+.header-right .bi-search {
+  font-size: 18px;
+}
+.header-right .header-cart {
+  position: relative;
+}
+.header-right .header-account .bi-person {
+  font-size: 26px;
+}
+.header-right .header-cart .header-cart-link .header-cart-count {
+  width: 16px;
+  height: 16px;
+  font-size: 10px;
+  background-color: black;
+  color: white;
+  border-radius: 100%;
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: 500;
+}
