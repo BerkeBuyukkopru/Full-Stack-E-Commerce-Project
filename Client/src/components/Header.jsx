@@ -10,13 +10,18 @@ const Header = () => {
       <div className="header-row">
         <div className="container">
           <div className="header-wrapper">
+
+            <div className="header-mobile">
+              <i className="bi bi-list" id ="btn-menu"></i>
+            </div>
+
             <div className="header-left">
               <a href="#" className="logo">
                 <img src="logo.png" alt="Logo" />
               </a>
             </div>
 
-            <div className="header-center">
+            <div className="header-center" id="sidebar">
               <nav className="navigation">
                 <ul className="menu-list">
                   <li className="menu-list-item">
@@ -30,6 +35,17 @@ const Header = () => {
                       Kategoriler
                       <i className="bi bi-chevron-down"></i>
                     </a>
+
+                    <div className="menu-dropdown-wrapper">
+                      <ul className="menu-dropdown-content">
+                        <li>
+                          <a href="#">Erkek</a>
+                        </li>
+                        <li>
+                          <a href="#">Kadın</a>
+                        </li>
+                      </ul>
+                    </div>
                   </li>
 
                   <li className="menu-list-item">
@@ -45,11 +61,14 @@ const Header = () => {
                   </li>
                 </ul>
               </nav>
+
+              <i className="bi-x-circle" id="close-sidebar"></i>
+
             </div>
 
             <div className="header-right">
               <div className="header-right-links">
-
+                
                 <button className="toggle-button">
                   <i className="bi bi-search"></i>
                 </button>
@@ -65,11 +84,10 @@ const Header = () => {
                 </a>
 
                 <div className="header-cart">
-                    <a href="#" className="header-cart-link">
+                  <a href="#" className="header-cart-link">
                     <i className="bi bi-bag"></i>
                     <span className="header-cart-count">0</span>
-                    </a>
-                    
+                  </a>
                 </div>
               </div>
             </div>
@@ -79,4 +97,5 @@ const Header = () => {
     </header>
   );
 };
+
 export default Header;

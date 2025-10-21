@@ -1,6 +1,11 @@
-/*HEADER BAŞLANGIÇ*/
+/*HEADER */
 header {
   border-bottom: 1px solid #dee0ea;
+  position: sticky;
+  width: 100%;
+  top: 0;
+  background: #fff;
+  z-index: 10;
 }
 .global-notification {
   background-color: black;
@@ -8,6 +13,10 @@ header {
   padding: 14px 0;
   text-align: center;
   font-size: 16px;
+}
+.global-notification a {
+  color: white;
+  font-weight: 600;
 }
 .header-row {
   height: 90px;
@@ -19,28 +28,41 @@ header {
   justify-content: space-between;
   align-items: center;
 }
+/*HEADER */
 
-/*HEADER LEFT BAŞLANGIÇ*/
+/*HEADER MOBİLE*/
+.header-mobile {
+  display: none;
+}
+/*HEADER MOBİLE*/
+
+/*HEADER LEFT */
 .header-left {
   display: flex;
   align-items: center;
   margin-left: -20px;
 }
-.header-left .logo img {
-  height: 70px;
-  width: auto;
-  object-fit: contain;
-  display: flex;
-}
+/*HEADER LEFT */
 
-/*HEADER CENTER BAŞLANGIÇ*/
+/*HEADER CENTER*/
+.header-center .bi-x-circle {
+    display: none;
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    font-size: 20px;
+    cursor: pointer;
+}
 .header-center .navigation .menu-list {
   display: flex;
   column-gap: 40px;
   align-items: center;
 }
-.header-center .menu-list .menu-list-item{
-    display: flex;
+.header-center .menu-list .menu-list-item {
+  display: flex;
+  align-items: center;
+  position: relative;
+  height: 90px;
 }
 .header-center .menu-list .menu-link {
   font-size: 16px;
@@ -62,12 +84,46 @@ header {
 .header-center .menu-list .menu-list-item:hover .menu-link::after {
   width: 100%;
 }
+.header-center .menu-list .menu-link.active::after {
+  width: 100%;
+}
 .header-center .menu-list i {
   font-size: 16px;
   margin-left: 1px;
 }
+.header-center .menu-dropdown-wrapper {
+  position: absolute;
+  top: 100%;
+  left: -30px;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  z-index: 1;
+}
+.header-center .menu-dropdown-content {
+  width: 220px;
+  background-color: white;
+  border: 1px solid #dee0ea;
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+}
+.header-center .menu-dropdown-content a {
+  display: flex;
+  padding: 4px 30px;
+  font-size: 14px;
+  transition: font-weight 0.2s ease;
+}
+.header-center .menu-dropdown-content a:hover {
+  font-weight: 600;
+}
+.header-center .menu-list .menu-list-item:hover .menu-dropdown-wrapper {
+  opacity: 1;
+  visibility: visible;
+}
+/*HEADER CENTER*/
 
-/*HEADER RIGHT BAŞLANGIÇ*/
+/*HEADER RIGHT*/
 .header-right .header-right-links {
   display: flex;
   column-gap: 20px;
@@ -105,4 +161,46 @@ header {
   justify-content: center;
   align-items: center;
   font-weight: 500;
+}
+/*HEADER RIGHT*/
+
+/*HEADER RESPONSİVE */
+@media (max-width: 650px) {
+  .header-center {
+    position: fixed;
+    top: 0;
+    left: -100%;
+    height: 100vh;
+    background-color: white;
+    border: 1px solid whitesmoke;
+    z-index: 2;
+    transition: 0.5s ease all;
+  }
+  .header-center .bi-x-circle {
+    display: inline-block;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
+  }
+  .header-center .menu-list {
+    flex-direction: column;
+
+    padding: 50px 75px;
+  }
+  .header-mobile {
+    display: inline-block;
+    cursor: pointer;
+    font-size: 24px;
+  }
+  header .menu-dropdown-wrapper{
+    display: none !important;
+  }
+  header .menu-list i {
+    display: none;
+  }
+  header .menu-list-item a{
+    font-size: 16px !important;
+  }
 }
