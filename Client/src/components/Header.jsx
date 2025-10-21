@@ -69,7 +69,7 @@ const Header = () => {
             <div className="header-right">
               <div className="header-right-links">
                 
-                <button className="toggle-button">
+                <button className="search-button">
                   <i className="bi bi-search"></i>
                 </button>
 

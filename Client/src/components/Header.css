@@ -33,6 +33,8 @@ header {
 /*HEADER MOBİLE*/
 .header-mobile {
   display: none;
+  cursor: pointer;
+  font-size: 24px;
 }
 /*HEADER MOBİLE*/
 
@@ -47,11 +49,6 @@ header {
 /*HEADER CENTER*/
 .header-center .bi-x-circle {
     display: none;
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    font-size: 20px;
-    cursor: pointer;
 }
 .header-center .navigation .menu-list {
   display: flex;
@@ -130,7 +127,7 @@ header {
   align-items: center;
   font-size: 22px;
 }
-.header-right .toggle-button {
+.header-right .search-button {
   border: none;
   background-color: transparent;
 }
@@ -172,7 +169,7 @@ header {
     left: -100%;
     height: 100vh;
     background-color: white;
-    border: 1px solid whitesmoke;
+    border: 1px solid #dee0ea;
     z-index: 2;
     transition: 0.5s ease all;
   }
@@ -191,8 +188,6 @@ header {
   }
   .header-mobile {
     display: inline-block;
-    cursor: pointer;
-    font-size: 24px;
   }
   header .menu-dropdown-wrapper{
     display: none !important;
