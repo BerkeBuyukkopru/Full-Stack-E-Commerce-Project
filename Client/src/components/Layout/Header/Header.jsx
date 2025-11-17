@@ -32,7 +32,7 @@ const Header = () => {
 
                   <li className="menu-list-item">
                     <a href="#" className="menu-link">
-                      Kategoriler
+                      Ürünler
                       <i className="bi bi-chevron-down"></i>
                     </a>
 

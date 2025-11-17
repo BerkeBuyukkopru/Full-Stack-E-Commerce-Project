@@ -1,0 +1,80 @@
+.contact .contact-bottom {
+  margin: 30px 0;
+}
+.contact-titles {
+  text-align: center;
+  margin-bottom: 20px;
+}
+.contact-bottom .contact-titles h2 {
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.contact-bottom .contact-titles p {
+  margin-top: 20px;
+  font-size: 16px;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.contact-elements {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+.contact-bottom .contact-form {
+  margin-top: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.contact-bottom .contact-form > div {
+  display: flex;
+  flex-direction: column;
+  flex-basis: calc(50% - 10px);
+  font-size: 14px;
+  row-gap: 5px;
+}
+
+.contact-bottom .contact-form > div label span {
+  color: red;
+}
+
+.contact-bottom .contact-form > div:nth-child(3),
+.contact-bottom .contact-form > div:nth-child(4) {
+  flex-basis: 100%;
+}
+
+.contact-bottom .contact-form .form-button {
+  display: flex;
+  justify-content: center;
+  font-size: 16px;
+  width: 100%;
+  height: auto;
+  background-color: black;
+  color: white;
+  font-weight: bold;
+  border-radius: 25px;
+  transition: 0.3s ease all;
+}
+
+.contact-bottom .contact-form .form-button:hover {
+  background-color: rgba(0, 0, 0, 0.800);
+}
+@media (max-width: 768px) {
+  .contact .contact-titles {
+    width: 100%;
+  }
+
+  .contact-elements {
+    flex-direction: column;
+    gap: 50px !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .contact-form {
+    flex-direction: column;
+  }
+}
