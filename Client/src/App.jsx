@@ -18,8 +18,8 @@ function App() {
       {/* <AuthPage/> */}
       {/* <CartPage/> */}
       {/* <BlogPage/> */}
-      {/* <BlogDetailsPage/> */}
-      <ProductDetailsPage/>
+       <BlogDetailsPage/> 
+      {/* <ProductDetailsPage/> */}
     </React.Fragment>
   );
 }
