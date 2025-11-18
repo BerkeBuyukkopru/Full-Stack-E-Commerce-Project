@@ -1,10 +1,11 @@
-import "./Review.css";
 import ReviewForm from "./ReviewForm";
 import ReviewItem from "./ReviewItem";
+import PropTypes from "prop-types";
+import "./Review.css";
 
-const Review = () => {
+const Review = ({ active }) => {
   return (
-    <div className="tab-panel-reviews">
+    <div className={`tab-panel-reviews ${active}`}>
       <h3>2 Yorum</h3>
       <div className="comments">
         <ol className="comment-list">
@@ -20,3 +21,7 @@ const Review = () => {
 };
 
 export default Review;
+
+Review.propTypes = {
+  active: PropTypes.string,
+};
