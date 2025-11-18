@@ -1,6 +1,6 @@
 import "./Header.css";
 
-const Header = () => {
+const Header = ({ setIsSearchShow }) => {
   return (
     <header>
       <div className="global-notification">
@@ -10,9 +10,8 @@ const Header = () => {
       <div className="header-row">
         <div className="container">
           <div className="header-wrapper">
-
             <div className="header-mobile">
-              <i className="bi bi-list" id ="btn-menu"></i>
+              <i className="bi bi-list" id="btn-menu"></i>
             </div>
 
             <div className="header-left">
@@ -63,13 +62,14 @@ const Header = () => {
               </nav>
 
               <i className="bi-x-circle" id="close-sidebar"></i>
-
             </div>
 
             <div className="header-right">
               <div className="header-right-links">
-                
-                <button className="search-button">
+                <button
+                  className="search-button"
+                  onClick={() => setIsSearchShow(true)}
+                >
                   <i className="bi bi-search"></i>
                 </button>
 
