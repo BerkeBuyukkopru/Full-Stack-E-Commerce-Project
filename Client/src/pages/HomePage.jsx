@@ -4,6 +4,7 @@ import Sliders from "../components/Slider/Sliders";
 import Categories from "../components/Categories/Categories";
 import Products from "../components/Products/Products";
 import Blogs from "../components/Blogs/Blogs";
+import FooterPromotion from "../components/FooterPromotion/FooterPromotion";
 
 const HomePage = () => {
   return (
@@ -12,6 +13,7 @@ const HomePage = () => {
       <Categories />
       <Products />
       <Blogs />
+      <FooterPromotion/>
     </React.Fragment>
   );
 };

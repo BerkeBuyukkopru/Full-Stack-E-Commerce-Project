@@ -38,7 +38,7 @@
   
   .site-main .product-price s {
     font-size: 18px;
-    color: #dee0ea;
+    color: darkgray;
   }
   
   .site-main .product-price strong {
@@ -80,7 +80,7 @@
   }
   
   .site-main .colors .color-wrapper.active {
-    border-color: #e51414;
+    border-color: black;
   }
   
   .site-main .colors .color-wrapper input[type="radio"] {
@@ -88,7 +88,7 @@
   }
   
   .site-main .colors .color-wrapper:hover {
-    border-color: #e51414;
+    border-color: black;
   }
   
   .site-main .colors .color-wrapper label {
@@ -137,7 +137,7 @@
   
   .site-main .values .values-list span {
     padding: 8px 40px;
-    border: 1px solid #dee0ea;
+    border: 1px solid darkgray;
     font-size: 14px;
     cursor: pointer;
     flex: 1;
@@ -146,12 +146,12 @@
   }
   
   .site-main .values .values-list span.active {
-    background-color: #e51414;
+    background-color: black;
     color: #fff;
   }
   
   .site-main .values .values-list span:hover {
-    background-color: #e51414;
+    background-color: black;
     color: #fff;
   }
   
@@ -188,7 +188,7 @@
   
   .site-main .divider {
     padding-bottom: 20px;
-    border-bottom: 1px solid #dee0ea;
+    border-bottom: 1px solid darkgray;
   }
   
   .site-main .product-meta {

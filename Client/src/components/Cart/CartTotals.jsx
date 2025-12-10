@@ -1,4 +1,25 @@
+import { useContext } from "react";
+import { CartContext } from "../../context/CartContext";
+import { useState } from "react";
+
 const CartTotals = () => {
+  const [cargoChecked, setCargoChecked] = useState(false);
+
+  const { cartItems } = useContext(CartContext);
+
+  const cartItemTotals = cartItems.map((item)=>{
+    const itemTotal = item.price.newPrice * item.quantity;
+    return itemTotal
+  });
+
+  const subTotals = cartItemTotals.reduce((previousValue,currentValue)=>{
+    return previousValue + currentValue;
+  },0);
+
+  const cargoPrice = 90;
+
+  const cartTotals = cargoChecked ? (subTotals+cargoPrice).toFixed(2):subTotals.toFixed(2);
+
   return (
     <div className="cart-totals">
       <h2>Sepet</h2>
@@ -7,15 +28,21 @@ const CartTotals = () => {
           <tr className="cart-subtotal">
             <th>Toplam Fiyat</th>
             <td>
-              <span id="subtotal">1800 TL</span>
+              <span id="subtotal">{subTotals.toFixed(2)} TL</span>
             </td>
           </tr>
           <tr>
-            <th>Adres</th>
+            <th>Adres ve Kargo</th>
             <td>
               <ul>
                 <li>
-                  <a href="#">Change Address</a>
+                  <label>
+                    Kargo: 90 TL
+                    <input type="checkbox" id="cargo" checked={cargoChecked} onChange={() => setCargoChecked(!cargoChecked)} />
+                  </label>
+                </li>
+                <li>
+                  <a href="#">Adresi Değiştir</a>
                 </li>
               </ul>
             </td>
@@ -23,7 +50,7 @@ const CartTotals = () => {
           <tr>
             <th>Sepet Tutarı</th>
             <td>
-              <strong id="cart-total">1800 TL</strong>
+              <strong id="cart-total">{cartTotals} TL</strong>
             </td>
           </tr>
         </tbody>

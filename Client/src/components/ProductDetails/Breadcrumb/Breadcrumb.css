@@ -8,12 +8,12 @@
   
   .single-product .breadcrumb ul li:not(:last-child):after {
     content: "/";
-    color: #dee0ea;
+    color: darkgray;
     margin: 0 5px;
   }
   
   .single-product .breadcrumb ul li a:hover {
-    color: #000;
+    color: black;
     text-decoration: underline;
   }
   

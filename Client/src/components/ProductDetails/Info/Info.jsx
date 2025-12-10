@@ -3,7 +3,7 @@ import "./Info.css";
 const Info = () => {
   return (
     <div className="product-info">
-      <h1 className="product-title">Ridley High Waist</h1>
+      <h1 className="product-title">Sweatshirt 1</h1>
       <div className="product-review">
         <ul className="product-star">
           <li>
@@ -22,11 +22,11 @@ const Info = () => {
             <i className="bi bi-star-half"></i>
           </li>
         </ul>
-        <span>2 reviews</span>
+        <span>2 Yorum</span>
       </div>
       <div className="product-price">
-        <s className="old-price">$165</s>
-        <strong className="new-price">$100</strong>
+        <s className="old-price">800 TL</s>
+        <strong className="new-price">600 TL</strong>
       </div>
       <p className="product-description">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
@@ -36,7 +36,7 @@ const Info = () => {
         <div className="variations">
           <div className="colors">
             <div className="colors-label">
-              <span>Color</span>
+              <span>Renk</span>
             </div>
             <div className="colors-wrapper">
               <div className="color-wrapper">
@@ -63,7 +63,7 @@ const Info = () => {
           </div>
           <div className="values">
             <div className="values-label">
-              <span>Size</span>
+              <span>Beden</span>
             </div>
             <div className="values-list">
               <span className="active">XS</span>
@@ -80,21 +80,21 @@ const Info = () => {
               id="add-to-cart"
               type="button"
             >
-              Add to cart
+              Sepete Ekle
             </button>
           </div>
           <div className="product-extra-buttons">
             <a href="#">
               <i className="bi bi-globe"></i>
-              <span>Size Guide</span>
+              <span>Beden Tablosu</span>
             </a>
             <a href="#">
               <i className="bi bi-heart"></i>
-              <span>Add to Wislist</span>
+              <span>Favorilere Ekle</span>
             </a>
             <a href="#">
               <i className="bi bi-share"></i>
-              <span>Share this Product</span>
+              <span>Ürünü Paylaş</span>
             </a>
           </div>
         </div>
@@ -106,12 +106,12 @@ const Info = () => {
           <strong>BE45VGRT</strong>
         </div>
         <div className="product-categories">
-          <span>Categories:</span>
-          <strong>Pants , Women</strong>
+          <span>Kategori:</span>
+          <strong>Pantalon , kadın</strong>
         </div>
         <div className="product-tags">
-          <span>Tags:</span>
-          <a href="#">black</a>,<a href="#">white</a>
+          <span>Tag:</span>
+          <a href="#">siyah</a>,<a href="#">beyaz</a>
         </div>
       </div>
     </div>
