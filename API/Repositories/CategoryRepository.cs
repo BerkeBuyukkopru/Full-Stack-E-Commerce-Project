@@ -28,5 +28,28 @@ namespace API.Repositories
         public async Task<List<Category>> GetAllAsync() =>
             await _categories.Find(category => true).ToListAsync();
 
+
+        public async Task<Category?> GetByIdAsync(string id) =>
+            await _categories.Find(category => category.Id == id).FirstOrDefaultAsync();
+
+        public async Task<bool> UpdateAsync(string id, Category updatedCategory)
+        {
+            // Güncelleme zaman damgasını ayarla
+            updatedCategory.UpdatedAt = DateTime.UtcNow;
+
+            // Belgeyi ID'ye göre bul ve verilen yeni nesneyle değiştir 
+            updatedCategory.Id = id;
+
+            var result = await _categories.ReplaceOneAsync(
+                category => category.Id == id, // Hangi belgeyi bul
+                updatedCategory // Ne ile değiştir
+            );
+            return result.IsAcknowledged && result.ModifiedCount > 0;
+        }
+
+        public async Task<Category?> DeleteAsync(string id)
+        {
+            return await _categories.FindOneAndDeleteAsync(category => category.Id ==id);
+        }
     }
 }
