@@ -2,17 +2,20 @@ using Microsoft.AspNetCore.Mvc;
 using API.Models;
 using API.Repositories;
 using API.Dtos;
+using API.Services;
 
 [ApiController]
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
     private readonly UserRepository _userRepository;
+    private readonly ITokenService _tokenService;
 
     // UserRepository'yi DI ile alıyoruz
-    public AuthController(UserRepository userRepository)
+    public AuthController(UserRepository userRepository,ITokenService tokenService)
     {
         _userRepository = userRepository;
+        _tokenService = tokenService;
     }
 
     // Rota: POST /api/auth/register
@@ -72,23 +75,29 @@ public class AuthController : ControllerBase
             return BadRequest(ModelState);
         }
 
-        try
+try
         {
-            // E-posta ile kullanıcı bulma
             var user = await _userRepository.GetByEmailAsync(loginDto.Email);
-
-            if (user == null)
+            
+            if (user == null || !BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password))
             {
                 return Unauthorized(new { error = "Invalid credentials." });
             }
 
-            // Şifre doğrulama
-            bool isPasswordValid = BCrypt.Net.BCrypt.Verify(loginDto.Password, user.Password);
-
-            if (!isPasswordValid)
+            // JWT TOKEN OLUŞTURMA ---
+            var token = _tokenService.CreateToken(user);
+            
+            // HTTP-ONLY COOKIE İLE TOKEN GÖNDERME ---
+            var cookieOptions = new CookieOptions
             {
-                return Unauthorized(new { error = "Invalid credentials." });
-            }
+                HttpOnly = true, // KRİTİK: JavaScript'in token'a erişimini engeller (XSS koruması)
+                Secure = true,   // Sadece HTTPS üzerinde gönderilir (Üretimde zorunlu)
+                SameSite = SameSiteMode.Strict, // CSRF riskini azaltır
+                Expires = DateTime.UtcNow.AddHours(1) // Token ömrü (örneğin 1 saat)
+            };
+            
+            // Token'ı yanıtın Cookie başlığına ekle
+            Response.Cookies.Append("AuthToken", token, cookieOptions);
 
             // Başarılı yanıt
             return Ok(new
@@ -99,7 +108,6 @@ public class AuthController : ControllerBase
                 surname = user.Surname,
                 role = user.Role.ToString().ToLower()
             });
-
         }
         catch (Exception ex)
         {
