@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "UueLOXxPZtI=",
+  "dgSpecHash": "JUp0aJruizc=",
   "success": true,
   "projectFilePath": "C:\\Users\\berke\\Documents\\GitHub\\Full-Stack-E-Commerce-Project\\API\\API.csproj",
   "expectedPackageFiles": [
@@ -31,18 +31,5 @@
     "C:\\Users\\berke\\.nuget\\packages\\system.security.principal.windows\\5.0.0\\system.security.principal.windows.5.0.0.nupkg.sha512",
     "C:\\Users\\berke\\.nuget\\packages\\zstdsharp.port\\0.7.3\\zstdsharp.port.0.7.3.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1603",
-      "level": "Warning",
-      "message": "API depends on Microsoft.AspNetCore.Authentication.JwtBearer (>= 8.15.0) but Microsoft.AspNetCore.Authentication.JwtBearer 8.15.0 was not found. Microsoft.AspNetCore.Authentication.JwtBearer 9.0.0 was resolved instead.",
-      "projectPath": "C:\\Users\\berke\\Documents\\GitHub\\Full-Stack-E-Commerce-Project\\API\\API.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Users\\berke\\Documents\\GitHub\\Full-Stack-E-Commerce-Project\\API\\API.csproj",
-      "libraryId": "Microsoft.AspNetCore.Authentication.JwtBearer",
-      "targetGraphs": [
-        "net9.0"
-      ]
-    }
-  ]
+  "logs": []
 }
