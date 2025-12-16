@@ -37,7 +37,7 @@ const Login = () => {
         login(data);
 
         if (data.role === "admin") {
-          navigate("/admin", { replace: true });
+          window.location.href = "/admin";
         } else {
           navigate("/", { replace: true });
         }

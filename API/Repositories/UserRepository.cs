@@ -26,5 +26,20 @@ namespace API.Repositories
         {
             await _users.InsertOneAsync(newUser);
         }
+
+        public async Task<List<User>> GetAllAsync() =>
+    await _users.Find(user => true).ToListAsync();
+
+
+        public async Task<User?> DeleteAsync(string id) =>
+        await _users.FindOneAndDeleteAsync(user => user.Id == id);
+
+
+        public async Task<long> CountAdminsAsync() =>
+            await _users.CountDocumentsAsync(user => user.Role == Models.UserRole.admin);
+
+
+
+
     }
 }

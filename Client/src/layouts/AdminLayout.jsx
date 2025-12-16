@@ -1,4 +1,4 @@
-import { Layout, Menu, Button } from "antd"; // Button eklendi
+import { Layout, Menu, Button, message } from "antd"; // Button eklendi
 import PropTypes from "prop-types";
 import {
   UserOutlined,
@@ -10,8 +10,11 @@ import {
   AppstoreOutlined,
   MenuOutlined, // Mobil menü butonu için eklendi
 } from "@ant-design/icons";
-import { useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react"; // Durum yönetimi için eklendi
+import { useNavigate, useLocation, Link } from "react-router-dom";
+import { useState, useContext, useEffect } from "react"; // Durum yönetimi için eklendi
+import { AuthContext } from "../context/AuthContext";
+
+
 
 const { Sider, Header, Content } = Layout;
 
@@ -94,7 +97,7 @@ const getMenuItems = (navigate) => [
     key: "/",
     icon: <RollbackOutlined />,
     label: "Ana Sayfaya Git",
-    onClick: () => navigate(`/`),
+    onClick: () => window.location.href = "/",
   },
 ];
 
@@ -102,6 +105,35 @@ const AdminLayout = ({ children }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+
+  const { user, loading } = useContext(AuthContext);
+
+  const isAdmin = user?.role === "admin";
+
+  useEffect(() => {
+    if (loading) {
+      return; 
+    }
+    if (!isAdmin) {
+
+      if (user) { 
+        message.warning("Bu sayfaya erişim yetkiniz bulunmamaktadır.");
+      }
+      navigate("/", { replace: true });
+      window.location.href = "/";
+    }
+  }, [loading, isAdmin, navigate, user]); 
+
+  if (loading) {
+    return (
+      <div style={{ padding: 50, textAlign: "center" }}>
+        Yetki Kontrol Ediliyor...
+      </div>
+    );
+  }
+  if (!isAdmin) {
+    return null; 
+  }
 
   const menuItems = getMenuItems(navigate);
   const selectedKeys = [location.pathname];
@@ -119,7 +151,7 @@ const AdminLayout = ({ children }) => {
           width: "100%",
           height: HEADER_HEIGHT,
           zIndex: 20,
-          padding: "0 20px",
+          padding: "0 20px", 
           background: "#000",
           borderBottom: "1px solid #000",
         }}
@@ -137,7 +169,7 @@ const AdminLayout = ({ children }) => {
             icon={<MenuOutlined />}
             onClick={() => setCollapsed(!collapsed)}
             style={{
-              fontSize: "16px",
+              fontSize: "18px",
               width: HEADER_HEIGHT,
               height: HEADER_HEIGHT,
               color: "#fff",
@@ -145,6 +177,18 @@ const AdminLayout = ({ children }) => {
               display: collapsed ? "inline-block" : "none",
             }}
           />
+          <Link 
+              to={"/admin"} 
+              className="admin-logo" 
+              style={{marginRight: 20, height: '100%', display: 'flex', alignItems: 'center'}}
+          >
+            <img 
+                src="/logo.png" 
+                alt="Logo" 
+                style={{marginLeft: 20, height: '55px', objectFit: 'cover' }} 
+            />
+          </Link>
+          
           <h1 style={{ color: "#fff", margin: 0 }}>Admin Paneli</h1>
         </div>
       </Header>
