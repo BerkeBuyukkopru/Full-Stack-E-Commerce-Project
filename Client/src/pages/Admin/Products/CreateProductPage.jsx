@@ -75,7 +75,7 @@ const CreateProductPage = () => {
           ...values,
           productPrice: {
             current: values.current,
-            discount: values.discount,
+            discount: 0,
           },
           colors,
           sizes,
@@ -141,8 +141,8 @@ const CreateProductPage = () => {
             </Select>
           </Form.Item>
 
-                    <Form.Item
-            label="Fiyat (Güncel)"
+          <Form.Item
+            label="Fiyat "
             name="current"
             rules={[{ required: true, message: "Lütfen ürün fiyatını girin!" }]}
             style={{ flex: 1 }}
@@ -150,24 +150,6 @@ const CreateProductPage = () => {
             <InputNumber
               min={0}
               placeholder="125.00"
-              style={{ width: "100%" }}
-            />
-          </Form.Item>
-
-          <Form.Item
-            label="İndirim Oranı"
-            name="discount"
-            rules={[
-              {
-                required: true,
-                message: "Lütfen bir ürün indirim oranı girin!",
-              },
-            ]}
-            style={{ flex: 1 }}
-          >
-            <InputNumber
-              min={0}
-              placeholder="Opsiyonel"
               style={{ width: "100%" }}
             />
           </Form.Item>

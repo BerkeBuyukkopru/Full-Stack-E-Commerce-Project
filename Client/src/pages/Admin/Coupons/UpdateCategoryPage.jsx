@@ -1,4 +1,13 @@
-import { Button, Form, Input, Spin, message, Card, Space, InputNumber } from "antd";
+import {
+  Button,
+  Form,
+  Input,
+  Spin,
+  message,
+  Card,
+  Space,
+  InputNumber,
+} from "antd";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom"; // useNavigate eklendi
 
@@ -17,7 +26,7 @@ const UpdateCouponPage = () => {
 
       try {
         const response = await fetch(`${apiUrl}/coupon/${couponId}`, {
-          credentials: "include", 
+          credentials: "include",
         });
 
         if (!response.ok) {
@@ -99,14 +108,26 @@ const UpdateCouponPage = () => {
           <Form.Item
             label="Kupon İndirim Oranı"
             name="discountPercent"
+            validateTrigger="onChange"
             rules={[
               {
                 required: true,
                 message: "Lütfen bir kupon indirim oranı girin!",
               },
+              {
+                type: "number",
+                min: 0,
+                max: 100,
+                message: "İndirim oranı %100'den büyük olamaz!",
+              },
             ]}
           >
-            <InputNumber />
+            <InputNumber
+              placeholder="Örn: 20"
+              style={{ width: "100%" }}
+              min={0}
+              max={100}
+            />
           </Form.Item>
 
           <Form.Item>
