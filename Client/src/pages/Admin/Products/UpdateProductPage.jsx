@@ -9,7 +9,7 @@ import {
   InputNumber,
   Select,
 } from "antd";
-import ReactQuill from "react-quill-new"; // Sizin kullandığınız kütüphane
+import ReactQuill from "react-quill-new";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import "react-quill-new/dist/quill.snow.css";
@@ -18,7 +18,6 @@ const UpdateProductPage = () => {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
   const navigate = useNavigate();
-
   const [form] = Form.useForm();
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const params = useParams();
@@ -27,9 +26,7 @@ const UpdateProductPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
-
       try {
-        // ✨ DÜZELTME 1: API Rotaları ve Yetkilendirme (Sizin API yapısına uygun: /category ve /product)
         const [categoriesResponse, singleProductResponse] = await Promise.all([
           fetch(`${apiUrl}/category`, { credentials: "include" }),
           fetch(`${apiUrl}/product/${productId}`, { credentials: "include" }),
@@ -40,10 +37,8 @@ const UpdateProductPage = () => {
           return;
         }
 
-        const [categoriesData, singleProductData] = await Promise.all([
-          categoriesResponse.json(),
-          singleProductResponse.json(),
-        ]);
+        const categoriesData = await categoriesResponse.json();
+        const singleProductData = await singleProductResponse.json();
 
         setCategories(categoriesData);
 
@@ -53,6 +48,7 @@ const UpdateProductPage = () => {
             current: singleProductData.productPrice?.current,
             discount: singleProductData.productPrice?.discount,
             description: singleProductData.description,
+
             img: (singleProductData.img || []).join("\n"),
             colors: (singleProductData.colors || []).join("\n"),
             sizes: (singleProductData.sizes || []).join("\n"),
@@ -68,36 +64,30 @@ const UpdateProductPage = () => {
       }
     };
     fetchData();
-    // Bağımlılık dizisi, Form'un veriyi set etmesini engellememek için sade bırakıldı.
   }, [apiUrl, productId, form]);
 
   const onFinish = async (values) => {
-    // Dizi dönüşümleri ve temizleme
     const imgLinks = values.img
       .split("\n")
       .map((link) => link.trim())
-      .filter((link) => link.length > 0);
+      .filter((l) => l.length > 0);
     const colors = values.colors
       .split("\n")
       .map((color) => color.trim())
-      .filter((color) => color.length > 0);
+      .filter((c) => c.length > 0);
     const sizes = values.sizes
       .split("\n")
       .map((size) => size.trim())
-      .filter((size) => size.length > 0);
+      .filter((s) => s.length > 0);
 
     setLoading(true);
     try {
-      // ✨ DÜZELTME 4: PUT Rotası ve Yetkilendirme
       const response = await fetch(`${apiUrl}/product/${productId}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
           ...values,
-          // ✨ DÜZELTME 5: Backend'deki 'productPrice' DTO alanı ile eşleştirme
           productPrice: {
             current: values.current,
             discount: values.discount || 0,
@@ -113,9 +103,7 @@ const UpdateProductPage = () => {
         navigate("/admin/products");
       } else {
         const errorData = await response.json();
-        message.error(
-          errorData.message || "Ürün güncellenirken bir hata oluştu."
-        );
+        message.error(errorData.message || "Ürün güncellenirken hata oluştu.");
       }
     } catch (error) {
       console.error("Ürün güncelleme hatası:", error);
@@ -132,7 +120,7 @@ const UpdateProductPage = () => {
     >
       <Spin spinning={loading}>
         <Form
-          name="create-product-form"
+          name="update-product-form"
           layout="vertical"
           onFinish={onFinish}
           form={form}

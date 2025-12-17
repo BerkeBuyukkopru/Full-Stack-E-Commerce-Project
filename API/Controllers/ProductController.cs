@@ -81,7 +81,7 @@ public class ProductController : ControllerBase
                 return NotFound(new { error = "Ürün bulunamadı" });
             }
 
-            return Ok(new List<Product> { product });
+            return Ok(product);
         }
         catch (Exception ex)
         {

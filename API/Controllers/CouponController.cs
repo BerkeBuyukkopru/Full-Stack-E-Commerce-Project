@@ -79,7 +79,7 @@ public class CouponController : ControllerBase
                 return NotFound(new { error = "Ürün  bulunamadı." });
             }
 
-            return Ok(new List<Coupon> { coupon });
+            return Ok(coupon);
         }
         catch (Exception ex)
         {
