@@ -5,7 +5,7 @@ using API.Dtos;
 using Microsoft.AspNetCore.Authorization;
 
 [ApiController]
-[Route("api/[controller]")] 
+[Route("api/[controller]")]
 public class ProductController : ControllerBase
 {
     private readonly ProductRepository _productRepository;
@@ -58,7 +58,7 @@ public class ProductController : ControllerBase
         try
         {
             var products = await _productRepository.GetAllAsync();
-            
+
             return Ok(products);
         }
         catch (Exception ex)
@@ -138,7 +138,7 @@ public class ProductController : ControllerBase
                 existingProduct.Category = productUpdateDto.Category;
             }
 
-           var isSuccessful= await _productRepository.UpdateAsync(id, existingProduct);
+            var isSuccessful = await _productRepository.UpdateAsync(id, existingProduct);
 
             if (!isSuccessful)
             {
@@ -172,6 +172,31 @@ public class ProductController : ControllerBase
         {
             Console.WriteLine(ex.Message);
             return StatusCode(500, new { error = "Server Error" });
+        }
+    }
+
+
+    [HttpGet("search/{productName}")]
+    public async Task<ActionResult<List<Product>>> Search(string productName)
+    {
+        try
+        {
+            // Boş arama kontrolü
+            if (string.IsNullOrWhiteSpace(productName))
+            {
+                return BadRequest(new { error = "Lütfen aranacak ürünün adını giriniz." });
+            }
+
+            // Repository üzerinden MongoDB sorgusunu çalıştır
+            var products = await _productRepository.SearchByNameAsync(productName);
+
+            // Sonuçları dön
+            return Ok(products);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
+            return StatusCode(500, new { error = "Arama işlemi sırasında sunucu hatası oluştu." });
         }
     }
 }

@@ -1,4 +1,5 @@
 using API.Models; // IDatabaseSettings ve Product Model'i için
+using MongoDB.Bson;
 using MongoDB.Driver;
 
 namespace API.Repositories
@@ -46,7 +47,13 @@ namespace API.Repositories
             return await _products.FindOneAndDeleteAsync(product => product.Id == id);
         }
 
+
+        public async Task<List<Product>> SearchByNameAsync(string productName)
+        {
+            var filter = Builders<Product>.Filter.Regex(p => p.Name, new BsonRegularExpression(productName, "i"));
+
+            return await _products.Find(filter).ToListAsync();
+        }
+
     }
-
-
 }
