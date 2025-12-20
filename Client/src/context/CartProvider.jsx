@@ -9,9 +9,18 @@ const CartProvider = ({ children }) => {
       : []
   );
 
+  // ✨ Kuponun uygulanıp uygulanmadığını takip eden state
+  const [appliedCoupon, setAppliedCoupon] = useState(
+    localStorage.getItem("appliedCoupon")
+      ? JSON.parse(localStorage.getItem("appliedCoupon"))
+      : null
+  );
+
   useEffect(() => {
     localStorage.setItem("cartItems", JSON.stringify(cartItems));
-  }, [cartItems]);
+    // ✨ Kupon bilgisini de localStorage'da saklayalım (Sayfa yenilenince gitmesin)
+    localStorage.setItem("appliedCoupon", JSON.stringify(appliedCoupon));
+  }, [cartItems, appliedCoupon]);
 
   const addToCart = (cartItem) => {
     setCartItems((prevCart) => [
@@ -21,18 +30,21 @@ const CartProvider = ({ children }) => {
   };
 
   const removeFromCart = (itemId) => {
-    const filteredCartItems = cartItems.filter((cartItem) => {
-      return cartItem.id !== itemId;
-    });
+    const filteredCartItems = cartItems.filter((cartItem) => cartItem.id !== itemId);
     setCartItems(filteredCartItems);
+    // Eğer sepette ürün kalmazsa kuponu da sıfırlayalım
+    if (filteredCartItems.length === 0) setAppliedCoupon(null);
   };
 
   return (
     <CartContext.Provider
       value={{
         cartItems,
+        setCartItems,
         addToCart,
         removeFromCart,
+        appliedCoupon,
+        setAppliedCoupon 
       }}
     >
       {children}
