@@ -34,7 +34,9 @@ import FavoritesPage from "./pages/FavoritesPage";
 import BlogListPage from "./pages/Admin/Blogs/BlogListPage";
 import CreateBlogPage from "./pages/Admin/Blogs/CreateBlogPage";
 import UpdateBlogPage from "./pages/Admin/Blogs/UpdateBlogPage";
-import "./App.css";
+import AdminContactPage from "./pages/Admin/Contacts/ContactPage";
+
+
 
 function App() {
   return (
@@ -80,6 +82,9 @@ function App() {
         <Route path="blogs" element={<BlogListPage />} />
         <Route path="blogs/create" element={<CreateBlogPage />} />
         <Route path="blogs/update/:id" element={<UpdateBlogPage />} />
+
+        {/* İletişim Mesajları */}
+        <Route path="contacts" element={<AdminContactPage />} />
       </Route>
     </Routes>
   );

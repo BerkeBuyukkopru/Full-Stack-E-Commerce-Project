@@ -36,14 +36,14 @@ const ProductItem = ({ productItem }) => {
   return (
     <div className="product-item glide__slide glide__slide--active">
       <div className="product-image">
-        <Link to={`product/${productId}`}>
+        <Link to={`/product/${productId}`}>
           {/* ✨ Backend'den gelen dizi formatındaki görseller */}
           <img src={productItem.img[0]} alt="" className="img1" />
           <img src={productItem.img[1] || productItem.img[0]} alt="" className="img2" />
         </Link>
       </div>
       <div className="product-info">
-        <Link to={`product/${productId}`} className="product-title">
+        <Link to={`/product/${productId}`} className="product-title">
           {productItem.name}
         </Link>
         <ul className="product-star">
@@ -72,7 +72,7 @@ const ProductItem = ({ productItem }) => {
           <button onClick={handleFavoriteClick}>
             <i className="bi bi-heart-fill" style={{ color: isFavorite ? 'darkred' : 'white' }}></i>
           </button>
-          <Link to={`product/${productId}`} className="product-link">
+          <Link to={`/product/${productId}`} className="product-link">
             <i className="bi bi-eye-fill"></i>
           </Link>
           <a href="#"><i className="bi bi-share-fill"></i></a>

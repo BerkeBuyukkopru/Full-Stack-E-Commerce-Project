@@ -131,6 +131,12 @@ const getMenuItems = (navigate) => [
     ],
   },
   {
+    key: "13",
+    icon: <i className="bi bi-envelope"></i>,
+    label: "Mesajlar",
+    onClick: () => navigate("/admin/contacts"),
+  },
+  {
     key: "/",
     icon: <RollbackOutlined />,
     label: "Ana Sayfaya Git",
