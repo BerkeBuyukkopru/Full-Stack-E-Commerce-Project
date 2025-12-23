@@ -26,8 +26,13 @@ namespace API.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(string id)
         {
+            if (!MongoDB.Bson.ObjectId.TryParse(id, out _))
+            {
+                return BadRequest("Geçersiz ID formatı.");
+            }
+
             var blog = await _blogRepository.GetByIdAsync(id);
-            if (blog == null) return NotFound("Blog not found.");
+            if (blog == null) return NotFound("Blog bulunamadı.");
             return Ok(blog);
         }
 
@@ -43,6 +48,11 @@ namespace API.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Update(string id, [FromBody] Blog blog)
         {
+            if (!MongoDB.Bson.ObjectId.TryParse(id, out _))
+            {
+                return BadRequest("Geçersiz ID formatı.");
+            }
+
             var existingBlog = await _blogRepository.GetByIdAsync(id);
             if (existingBlog == null) return NotFound("Blog not found.");
 
@@ -58,6 +68,11 @@ namespace API.Controllers
         [Authorize(Roles = "admin")]
         public async Task<IActionResult> Delete(string id)
         {
+            if (!MongoDB.Bson.ObjectId.TryParse(id, out _))
+            {
+                return BadRequest("Geçersiz ID formatı.");
+            }
+
             var existingBlog = await _blogRepository.GetByIdAsync(id);
             if (existingBlog == null) return NotFound("Blog not found.");
 

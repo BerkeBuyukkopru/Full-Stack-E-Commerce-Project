@@ -39,6 +39,7 @@ builder.Services.AddSingleton<OrderRepository>();
 builder.Services.AddSingleton<SiteSettingRepository>();
 builder.Services.AddSingleton<SliderRepository>();
 builder.Services.AddSingleton<BlogRepository>();
+builder.Services.AddSingleton<ContactRepository>();
 
 // Background Services
 builder.Services.AddHostedService<OrderExpirationService>();
