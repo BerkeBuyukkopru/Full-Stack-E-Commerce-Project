@@ -127,18 +127,59 @@ const CreateProductPage = () => {
             rules={[{ required: true, message: "Lütfen 1 kategori seçin!" }]}
           >
             <Select
-              placeholder="Kategori Seçiniz"
-              loading={categories.length === 0}
+              onChange={(value) => {
+                const selectedCategory = categories.find(
+                  (c) => c._id === value || c.id === value
+                );
+                if (selectedCategory) {
+                  if (selectedCategory.gender !== "Unisex") {
+                    form.setFieldsValue({ gender: selectedCategory.gender });
+                  } else {
+                     // If category becomes Unisex, let user choose, default to Unisex if current is invalid? 
+                     // Or just keep current. Let's reset to Unisex if it was forced before? 
+                     // Actually requirement says: "if Unisex, allow user to select".
+                  }
+                }
+              }}
             >
               {categories.map((category) => (
                 <Select.Option
                   value={category._id || category.id}
                   key={category._id || category.id}
                 >
-                  {category.name}
+                  {category.name} ({category.gender === "Man" ? "Erkek" : category.gender === "Woman" ? "Kadın" : "Unisex"})
                 </Select.Option>
               ))}
             </Select>
+          </Form.Item>
+
+          <Form.Item
+            noStyle
+            shouldUpdate={(prevValues, currentValues) => prevValues.category !== currentValues.category}
+          >
+            {({ getFieldValue }) => {
+              const selectedCategoryId = getFieldValue("category");
+              const selectedCategory = categories.find(
+                (c) => c._id === selectedCategoryId || c.id === selectedCategoryId
+              );
+              const isGenderFixed =
+                selectedCategory && selectedCategory.gender !== "Unisex";
+
+              return (
+                <Form.Item
+                  label="Cinsiyet"
+                  name="gender"
+                  initialValue="Unisex"
+                  rules={[{ required: true, message: "Lütfen cinsiyet seçin!" }]}
+                >
+                  <Select disabled={isGenderFixed}>
+                    <Select.Option value="Man">Erkek</Select.Option>
+                    <Select.Option value="Woman">Kadın</Select.Option>
+                    <Select.Option value="Unisex">Unisex</Select.Option>
+                  </Select>
+                </Form.Item>
+              );
+            }}
           </Form.Item>
 
           <Form.Item

@@ -86,7 +86,6 @@ const FavoritesPage = () => {
       <div className="container">
         <div className="section-title">
           <h2>Favorilerim</h2>
-          <p>Beğendiğiniz ürünleri burada yönetebilirsiniz.</p>
         </div>
         
         <Table

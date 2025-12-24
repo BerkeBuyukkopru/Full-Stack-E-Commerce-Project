@@ -30,6 +30,7 @@ public class CategoryController : ControllerBase
             {
                 Name = categoryDto.Name,
                 Img = categoryDto.Img,
+                Gender = categoryDto.Gender,
 
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
@@ -110,6 +111,10 @@ public class CategoryController : ControllerBase
             if (categoryUpdateDto.Img != null)
             {
                 existingCategory.Img = categoryUpdateDto.Img;
+            }
+            if (categoryUpdateDto.Gender != null)
+            {
+                existingCategory.Gender = categoryUpdateDto.Gender;
             }
 
             var isSuccessful = await _categoryRepository.UpdateAsync(id, existingCategory);

@@ -14,6 +14,8 @@ namespace API.Models
         
         public string Img { get; set; } = string.Empty;
 
+        public string Gender { get; set; } = "Unisex";
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }

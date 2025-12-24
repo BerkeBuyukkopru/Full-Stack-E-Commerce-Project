@@ -35,6 +35,7 @@ public class ProductController : ControllerBase
                 Sizes = productDto.Sizes,
                 ProductPrice = productDto.ProductPrice,
                 Category = productDto.Category,
+                Gender = productDto.Gender,
 
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
@@ -53,11 +54,11 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Product>>> Get()
+    public async Task<ActionResult<List<Product>>> Get([FromQuery] string? gender, [FromQuery] string? categoryId)
     {
         try
         {
-            var products = await _productRepository.GetAllAsync();
+            var products = await _productRepository.GetAllAsync(gender, categoryId);
 
             return Ok(products);
         }
@@ -136,6 +137,10 @@ public class ProductController : ControllerBase
             if (productUpdateDto.Category != null)
             {
                 existingProduct.Category = productUpdateDto.Category;
+            }
+            if (productUpdateDto.Gender != null)
+            {
+                existingProduct.Gender = productUpdateDto.Gender;
             }
 
             var isSuccessful = await _productRepository.UpdateAsync(id, existingProduct);

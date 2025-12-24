@@ -4,6 +4,7 @@ import HomePage from "./pages/HomePage";
 import ShopPage from "./pages/ShopPage";
 import BlogPage from "./pages/BlogPage";
 import ContactPage from "./pages/ContactPage";
+import CategoriesPage from "./pages/CategoriesPage";
 import CartPage from "./pages/CartPage";
 import AuthPage from "./pages/AuthPage";
 import PaymentPage from "./pages/PaymentPage";
@@ -35,28 +36,35 @@ import BlogListPage from "./pages/Admin/Blogs/BlogListPage";
 import CreateBlogPage from "./pages/Admin/Blogs/CreateBlogPage";
 import UpdateBlogPage from "./pages/Admin/Blogs/UpdateBlogPage";
 import AdminContactPage from "./pages/Admin/Contacts/ContactPage";
-
-
+import UserLayout from "./layouts/UserLayout"; // Assuming UserLayout exists and is imported
+import AdminLayoutWrapper from "./layouts/AdminLayoutWrapper";
 
 function App() {
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/shop" element={<ShopPage />} />
-      <Route path="/blog" element={<BlogPage />} />
-      <Route path="/contact" element={<ContactPage />} />
-      <Route path="/cart" element={<CartPage />} />
+      <Route path="/" element={<UserLayout />}>
+        <Route index element={<HomePage />} />
+        <Route path="shop" element={<ShopPage />} />
+        <Route path="blog" element={<BlogPage />} />
+        <Route path="contact" element={<ContactPage />} />
+        <Route path="categories" element={<CategoriesPage />} />
+        <Route path="cart" element={<CartPage />} />
+        <Route path="auth" element={<AuthPage />} />
+        <Route path="about" element={<AboutPage />} />
+        <Route path="privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="favorites" element={<FavoritesPage />} />
+        <Route path="product/:id" element={<ProductDetailsPage />} />
+        <Route path="blog/:id" element={<BlogDetailsPage />} />
+      </Route>
+
+      {/* Routes that might not use UserLayout or have specific absolute paths */}
       <Route path="/payment" element={<PaymentPage />} />
       <Route path="/payment/success" element={<PaymentSuccessPage />} />
       <Route path="/payment/failure" element={<PaymentFailurePage />} />
-      <Route path="/auth" element={<AuthPage />} />
-      <Route path="/product/:id" element={<ProductDetailsPage />} />
-      <Route path="/blog/:id" element={<BlogDetailsPage />} />
-      <Route path="/about" element={<AboutPage />} />
       <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
       <Route path="/favorites" element={<FavoritesPage />} />
 
-      <Route path="/admin/*">
+      <Route path="/admin/*" element={<AdminLayoutWrapper />}>
         <Route index element={<Navigate to="orders" replace />} />
         <Route path="users" element={<UserPage />} />
         <Route path="categories" element={<CategoryPage />} />
