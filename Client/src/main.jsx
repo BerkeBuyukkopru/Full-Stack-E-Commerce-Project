@@ -5,7 +5,6 @@ import CartProvider from "./context/CartProvider.jsx";
 import { AuthContextProvider } from "./context/AuthContextProvider.jsx";
 import SiteProvider from "./context/SiteContext.jsx";
 import FavoritesProvider from "./context/FavoritesContext.jsx";
-import { Layout } from "./layouts/Layout.jsx";
 import App from "./App.jsx";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -19,10 +18,8 @@ createRoot(document.getElementById("root")).render(
       <AuthContextProvider>
         <SiteProvider>
           <FavoritesProvider>
-            <Layout>
               <ScrollToTop />
               <App />
-            </Layout>
           </FavoritesProvider>
         </SiteProvider>
       </AuthContextProvider>

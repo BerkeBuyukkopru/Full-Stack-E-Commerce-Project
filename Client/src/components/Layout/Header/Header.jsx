@@ -66,12 +66,35 @@ const Header = ({ setIsSearchShow }) => {
                     <div className="menu-dropdown-wrapper">
                       <ul className="menu-dropdown-content">
                         <li>
-                          <a href="#">Erkek</a>
+                          <Link to="/shop?gender=Man">Erkek</Link>
                         </li>
                         <li>
-                          <a href="#">Kadın</a>
+                          <Link to="/shop?gender=Woman">Kadın</Link>
                         </li>
                       </ul>
+                    </div>
+                  </li>
+
+                  <li className="menu-list-item">
+                    <Link
+                      to={"/categories"}
+                      className={`menu-link ${
+                        pathname === "/categories" && "active"
+                      }`}
+                    >
+                      Kategoriler
+                      <i className="bi bi-chevron-down"></i>
+                    </Link>
+
+                    <div className="menu-dropdown-wrapper">
+                       <ul className="menu-dropdown-content">
+                        <li>
+                          <Link to="/categories?gender=Man">Erkek</Link>
+                        </li>
+                        <li>
+                          <Link to="/categories?gender=Woman">Kadın</Link>
+                        </li>
+                       </ul>
                     </div>
                   </li>
 

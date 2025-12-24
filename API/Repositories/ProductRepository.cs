@@ -23,9 +23,41 @@ namespace API.Repositories
             return product;
         }
 
-        public async Task<List<Product>> GetAllAsync()
+        public async Task<List<Product>> GetAllAsync(string? gender = null, string? categoryId = null)
         {
-            return await _products.Find(product => true).ToListAsync();
+            var builder = Builders<Product>.Filter;
+            var filter = builder.Empty;
+
+            if (!string.IsNullOrEmpty(gender))
+            {
+                // "Unisex" products should probably be returned for both, or explicit match?
+                // For now, let's do strict match OR "Unisex" if user is browsing specifically "Man" or "Woman".
+                // If filtering by "Unisex", only "Unisex".
+                // But usually, if I click "Man", I want "Man" AND "Unisex".
+                // Let's implement strict filtering first, user requested "Erkek için eklenenler" (Men's category).
+                // Actually they said "Unisex" too? Let's check requirements.
+                // "Kategori oluşturma ... erkek, kadın ya da her iki cinsiyete de ait olup olmadığı seçilebilmeli." -> "Unisex"
+                // "Erkek başlığı altında ... yalnızca erkekler için eklenmiş ... ürünler listelenmeli" -> This implies matching gender.
+                // However, Unisex items usually appear in both.
+                // Let's support multiple values or just strict match.
+                // Simpler approach: Strict match or "Unisex" included.
+                // Let's start with equality check.
+                if (gender != "Unisex")
+                {
+                     filter &= (builder.Eq(p => p.Gender, gender) | builder.Eq(p => p.Gender, "Unisex"));
+                }
+                else
+                {
+                     filter &= builder.Eq(p => p.Gender, "Unisex");
+                }
+            }
+
+            if (!string.IsNullOrEmpty(categoryId))
+            {
+                filter &= builder.Eq(p => p.Category, categoryId);
+            }
+
+            return await _products.Find(filter).ToListAsync();
         }
         public async Task<Product?> GetByIdAsync(string id)
         {

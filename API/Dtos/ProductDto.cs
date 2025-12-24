@@ -25,5 +25,8 @@ namespace API.Dtos
 
         [Required]
         public string Category { get; set; } = string.Empty;
+
+        [Required]
+        public string Gender { get; set; } = "Unisex";
     }
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import ProductItem from "./ProductItem";
 import Slider from "react-slick";
 import "./Products.css";
@@ -7,12 +8,26 @@ import { message } from "antd";
 const Products = () => {
   const [products, setProducts] = useState([]);
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const [searchParams] = useSearchParams();
+
+  const gender = searchParams.get("gender");
+  const categoryId = searchParams.get("categoryId");
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        // ✨ Senin Backend rotan: /product
-        const response = await fetch(`${apiUrl}/product`);
+        let url = `${apiUrl}/product`;
+        
+        // Query params oluşturma
+        const params = new URLSearchParams();
+        if (gender) params.append("gender", gender);
+        if (categoryId) params.append("categoryId", categoryId);
+
+        if (params.toString()) {
+            url += `?${params.toString()}`;
+        }
+
+        const response = await fetch(url);
 
         if (response.ok) {
           const data = await response.json();
@@ -25,7 +40,7 @@ const Products = () => {
       }
     };
     fetchProducts();
-  }, [apiUrl]);
+  }, [apiUrl, gender, categoryId]);
 
   const sliderSettings = {
     dots: false,
@@ -44,8 +59,7 @@ const Products = () => {
     <section className="products">
       <div className="container">
         <div className="section-title">
-          <h2>Öne Çıkanlar</h2>
-          <p>Yaz Koleksiyonu Yeni Modern Tasarımlar</p>
+          <h2>Ürünler</h2>
         </div>
         <div className="product-wrapper product-carousel">
           <Slider {...sliderSettings}>

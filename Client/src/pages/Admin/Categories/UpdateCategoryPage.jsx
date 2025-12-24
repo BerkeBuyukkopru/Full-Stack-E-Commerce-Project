@@ -1,4 +1,4 @@
-import { Button, Form, Input, Spin, message, Card, Space } from "antd";
+import { Button, Form, Input, Spin, message, Card, Space, Select } from "antd";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom"; // useNavigate eklendi
 
@@ -32,6 +32,7 @@ const UpdateCategoryPage = () => {
                     form.setFieldsValue({
                         name: data.name,
                         img: data.img,
+                        gender: data.gender || "Unisex",
                     });
                 }
             } catch (error) {
@@ -99,6 +100,18 @@ const UpdateCategoryPage = () => {
                         ]}
                     >
                         <Input placeholder="Kategori adı" />
+                    </Form.Item>
+
+                    <Form.Item
+                        label="Cinsiyet"
+                        name="gender"
+                        rules={[{ required: true, message: "Lütfen cinsiyet seçin!" }]}
+                    >
+                        <Select>
+                            <Select.Option value="Man">Erkek</Select.Option>
+                            <Select.Option value="Woman">Kadın</Select.Option>
+                            <Select.Option value="Unisex">Unisex</Select.Option>
+                        </Select>
                     </Form.Item>
 
                     {/* Kategori Görseli (Link) Alanı */}

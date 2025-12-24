@@ -89,6 +89,12 @@ const CategoryPage = () => {
       render: (text) => <b>{text}</b>,
     },
     {
+      title: "Cinsiyet",
+      dataIndex: "gender",
+      key: "gender",
+      render: (text) => <span>{text === "Man" ? "Erkek" : text === "Woman" ? "Kadın" : "Unisex"}</span>,
+    },
+    {
       title: "Oluşturulma Tarihi",
       dataIndex: "createdAt",
       key: "createdAt",

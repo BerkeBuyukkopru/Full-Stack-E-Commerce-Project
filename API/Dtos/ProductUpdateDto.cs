@@ -11,5 +11,6 @@ namespace API.Dtos
         public List<string>? Sizes { get; set; }
         public Price? ProductPrice { get; set; }
         public string? Category { get; set; }
+        public string? Gender { get; set; }
     }
 }

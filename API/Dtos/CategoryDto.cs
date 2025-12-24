@@ -9,5 +9,8 @@ namespace API.Dtos
 
         [Required(ErrorMessage = "Resim URL'si zorunludur.")]
         public string Img { get; set; } = string.Empty;
+
+        [Required]
+        public string Gender { get; set; } = "Unisex";
     }
 }

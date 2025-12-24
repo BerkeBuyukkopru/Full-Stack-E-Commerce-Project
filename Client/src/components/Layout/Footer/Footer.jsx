@@ -36,6 +36,9 @@ const Footer = () => {
                   <Link to={"/shop"}>Ürünler</Link>
                 </li>
                 <li>
+                  <Link to={"/categories"}>Kategoriler</Link>
+                </li>
+                <li>
                   <Link to={"/blog"}>Blog</Link>
                 </li>
               </ul>

@@ -4,5 +4,6 @@ namespace API.Dtos
     {
         public string? Name { get; set; }
         public string? Img { get; set; }
+        public string? Gender { get; set; }
     }
 }
