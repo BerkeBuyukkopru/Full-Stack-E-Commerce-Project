@@ -8,12 +8,16 @@ const CartItem = ({ cartItem }) => {
   const { removeFromCart, updateItemQuantity } = useContext(CartContext);
   return (
     <tr className="cart-item">
-      <td></td>
       <td className="cart-image">
         <img src={cartItem.img[0]} alt="" />
-        <i className="bi bi-x delete-cart" onClick={() => removeFromCart(cartItem.id)}></i>
+        <i className="bi bi-x delete-cart" onClick={() => removeFromCart(cartItem.id, cartItem.size, cartItem.color)}></i>
       </td>
-      <td>{cartItem.name}</td>
+      <td>
+        {cartItem.name}
+      </td>
+      <td>{cartItem.color || "-"}</td>
+
+      <td>{cartItem.size ? cartItem.size.toUpperCase() : "-"}</td>
       <td>{cartItem.price.toFixed(2)} TL</td>
       <td className="product-quantity">
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -22,8 +26,8 @@ const CartItem = ({ cartItem }) => {
             shape="circle"
             size="small"
             icon={<MinusOutlined />}
-            htmlType="button" // CRITICAL: Propagates to native button type="button" to prevent form submit
-            onClick={() => updateItemQuantity(cartItem.id, cartItem.quantity - 1)}
+            htmlType="button" 
+            onClick={() => updateItemQuantity(cartItem.id, cartItem.size, cartItem.color, cartItem.quantity - 1)}
             disabled={cartItem.quantity <= 1}
             style={{ backgroundColor: 'black', borderColor: 'black' }}
           />
@@ -35,8 +39,8 @@ const CartItem = ({ cartItem }) => {
             shape="circle"
             size="small"
             icon={<PlusOutlined />}
-            htmlType="button" // CRITICAL: Propagates to native button type="button" to prevent form submit
-            onClick={() => updateItemQuantity(cartItem.id, cartItem.quantity + 1)}
+            htmlType="button" 
+            onClick={() => updateItemQuantity(cartItem.id, cartItem.size, cartItem.color, cartItem.quantity + 1)}
             style={{ backgroundColor: 'black', borderColor: 'black' }}
           />
         </div>

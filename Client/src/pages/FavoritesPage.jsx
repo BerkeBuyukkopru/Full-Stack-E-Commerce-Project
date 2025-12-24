@@ -27,6 +27,18 @@ const FavoritesPage = () => {
       render: (text) => <b>{text}</b>,
     },
     {
+      title: "Renk",
+      dataIndex: "selectedColor",
+      key: "selectedColor",
+      render: (text) => <span>{text || "-"}</span>,
+    },
+    {
+      title: "Beden",
+      dataIndex: "selectedSize",
+      key: "selectedSize",
+      render: (text) => <span>{text ? text.toUpperCase() : "-"}</span>,
+    },
+    {
       title: "Fiyat",
       dataIndex: "productPrice",
       key: "price",
@@ -45,7 +57,11 @@ const FavoritesPage = () => {
       title: "İşlemler",
       key: "actions",
       render: (_, record) => {
-        const isProductInCart = cartItems.some((item) => item.id === (record._id || record.id));
+        const isProductInCart = cartItems.some((item) => 
+            item.id === (record._id || record.id) &&
+            item.size === record.selectedSize &&
+            item.color === record.selectedColor
+        );
         
         return (
           <Space>
@@ -63,15 +79,19 @@ const FavoritesPage = () => {
                    addToCart({
                       ...record,
                       id: record._id || record.id,
-                      price: discountedPrice
+                      price: discountedPrice,
+                      size: record.selectedSize,
+                      color: record.selectedColor,
+                      quantity: 1
                    });
+                   message.success("Ürün sepete eklendi.");
               }}
             >
               Sepete Ekle
             </Button>
             <Button 
               danger 
-              onClick={() => removeFromFavorites(record._id || record.id)}
+              onClick={() => removeFromFavorites(record._id || record.id, record.selectedSize, record.selectedColor)}
             >
               Favorilerden Kaldır
             </Button>
@@ -91,7 +111,7 @@ const FavoritesPage = () => {
         <Table
             dataSource={favorites}
             columns={columns}
-            rowKey={(record) => record._id || record.id}
+            rowKey={(record) => `${record._id || record.id}-${record.selectedSize}-${record.selectedColor}`}
             locale={{ emptyText: "Henüz favorilere eklenmiş bir ürün yok." }}
             pagination={false}
         />

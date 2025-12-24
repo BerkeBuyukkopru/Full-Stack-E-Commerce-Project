@@ -31,8 +31,9 @@ public class ProductController : ControllerBase
                 Name = productDto.Name,
                 Description = productDto.Description,
                 Img = productDto.Img,
-                Colors = productDto.Colors,
+                Colors = productDto.Colors.Select(c => System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(c.ToLower())).ToList(),
                 Sizes = productDto.Sizes,
+                TotalStock = productDto.Sizes.Sum(s => s.Stock),
                 ProductPrice = productDto.ProductPrice,
                 Category = productDto.Category,
                 Gender = productDto.Gender,
@@ -124,11 +125,12 @@ public class ProductController : ControllerBase
 
             if (productUpdateDto.Colors != null)
             {
-                existingProduct.Colors = productUpdateDto.Colors;
+                existingProduct.Colors = productUpdateDto.Colors.Select(c => System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(c.ToLower())).ToList();
             }
             if (productUpdateDto.Sizes != null)
             {
                 existingProduct.Sizes = productUpdateDto.Sizes;
+                existingProduct.TotalStock = existingProduct.Sizes.Sum(s => s.Stock);
             }
             if (productUpdateDto.ProductPrice != null)
             {

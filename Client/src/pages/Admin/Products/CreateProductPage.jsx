@@ -9,6 +9,7 @@ import {
   InputNumber,
   Select,
 } from "antd";
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import ReactQuill from "react-quill-new";
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
@@ -57,10 +58,9 @@ const CreateProductPage = () => {
       .split("\n")
       .map((color) => color.trim())
       .filter((color) => color.length > 0);
-    const sizes = values.sizes
-      .split("\n")
-      .map((size) => size.trim())
-      .filter((size) => size.length > 0);
+    
+    // Bedenler artık doğrudan formdan array olarak geliyor
+    const sizes = values.sizes;
 
     setLoading(true);
     try {
@@ -251,10 +251,45 @@ const CreateProductPage = () => {
               },
             ]}
           >
-            <Input.TextArea
-              placeholder="Her bir beden ölçüsünü (S, M, L vb.) yeni bir satıra yazın."
-              autoSize={{ minRows: 4 }}
-            />
+            <Form.List name="sizes" initialValue={[{ size: "", stock: 0 }]}>
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, ...restField }) => (
+                    <Space
+                      key={key}
+                      style={{ display: "flex", marginBottom: 8 }}
+                      align="baseline"
+                    >
+                      <Form.Item
+                        {...restField}
+                        name={[name, "size"]}
+                        rules={[{ required: true, message: "Beden giriniz" }]}
+                      >
+                        <Input placeholder="Beden (S, M, 36 vs.)" />
+                      </Form.Item>
+                      <Form.Item
+                        {...restField}
+                        name={[name, "stock"]}
+                        rules={[{ required: true, message: "Stok giriniz" }]}
+                      >
+                         <InputNumber min={0} placeholder="Stok Adedi" />
+                      </Form.Item>
+                      <MinusCircleOutlined onClick={() => remove(name)} />
+                    </Space>
+                  ))}
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() => add()}
+                      block
+                      icon={<PlusOutlined />}
+                    >
+                      Beden Ekle
+                    </Button>
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
           </Form.Item>
 
           <Form.Item>

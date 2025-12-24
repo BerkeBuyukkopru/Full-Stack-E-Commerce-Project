@@ -83,12 +83,15 @@ const Tabs = ({ singleProduct }) => {
                 <th>Beden</th>
                 <td>
                   <p>
-                    {(singleProduct.sizes || []).map((item, index) => (
-                      <span key={index}>
-                        {item.toUpperCase()}
-                        {index < singleProduct.sizes.length - 1 && ", "}
-                      </span>
-                    ))}
+                    {(singleProduct.sizes || []).map((item, index) => {
+                       const sizeLabel = typeof item === 'string' ? item : item.size;
+                       return (
+                          <span key={index}>
+                            {sizeLabel.toUpperCase()}
+                            {index < singleProduct.sizes.length - 1 && ", "}
+                          </span>
+                       );
+                    })}
                   </p>
                 </td>
               </tr>

@@ -8,6 +8,12 @@ namespace API.Models
         public decimal Current { get; set; }
         public decimal? Discount { get; set; }
     }
+    public class ProductSize 
+    {
+        public string Size { get; set; } = string.Empty;
+        public int Stock { get; set; }
+    }
+
     public class Product
     {
         [BsonId]
@@ -24,7 +30,11 @@ namespace API.Models
 
         public List<string> Colors { get; set; } = new List<string>();
 
-        public List<string> Sizes { get; set; } = new List<string>();
+        // Changed from List<string> to List<ProductSize>
+        public List<ProductSize> Sizes { get; set; } = new List<ProductSize>();
+
+        // Added TotalStock
+        public int TotalStock { get; set; }
 
         public Price ProductPrice { get; set; } = new Price();
 

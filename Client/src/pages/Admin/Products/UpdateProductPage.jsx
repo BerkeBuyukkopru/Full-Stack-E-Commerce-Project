@@ -9,6 +9,7 @@ import {
   InputNumber,
   Select,
 } from "antd";
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons";
 import ReactQuill from "react-quill-new";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
@@ -51,7 +52,11 @@ const UpdateProductPage = () => {
 
             img: (singleProductData.img || []).join("\n"),
             colors: (singleProductData.colors || []).join("\n"),
-            sizes: (singleProductData.sizes || []).join("\n"),
+            // Eski veri (string array) gelirse objeye çevir, yeni veri ise olduğu gibi kullan
+            sizes: (singleProductData.sizes || []).map(s => {
+                if (typeof s === 'string') return { size: s, stock: 0 };
+                return s;
+            }),
             category:
               singleProductData.category?._id || singleProductData.category,
             gender: singleProductData.gender || "Unisex",
@@ -76,10 +81,8 @@ const UpdateProductPage = () => {
       .split("\n")
       .map((color) => color.trim())
       .filter((c) => c.length > 0);
-    const sizes = values.sizes
-      .split("\n")
-      .map((size) => size.trim())
-      .filter((s) => s.length > 0);
+    
+    const sizes = values.sizes;
 
     setLoading(true);
     try {
@@ -275,10 +278,45 @@ const UpdateProductPage = () => {
               },
             ]}
           >
-            <Input.TextArea
-              placeholder="Her bir beden ölçüsünü (S, M, L vb.) yeni bir satıra yazın."
-              autoSize={{ minRows: 4 }}
-            />
+            <Form.List name="sizes">
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, ...restField }) => (
+                    <Space
+                      key={key}
+                      style={{ display: "flex", marginBottom: 8 }}
+                      align="baseline"
+                    >
+                      <Form.Item
+                        {...restField}
+                        name={[name, "size"]}
+                        rules={[{ required: true, message: "Beden giriniz" }]}
+                      >
+                        <Input placeholder="Beden (S, M, 36 vs.)" />
+                      </Form.Item>
+                      <Form.Item
+                        {...restField}
+                        name={[name, "stock"]}
+                        rules={[{ required: true, message: "Stok giriniz" }]}
+                      >
+                         <InputNumber min={0} placeholder="Stok Adedi" />
+                      </Form.Item>
+                      <MinusCircleOutlined onClick={() => remove(name)} />
+                    </Space>
+                  ))}
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() => add()}
+                      block
+                      icon={<PlusOutlined />}
+                    >
+                      Beden Ekle
+                    </Button>
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
           </Form.Item>
 
           <Form.Item>

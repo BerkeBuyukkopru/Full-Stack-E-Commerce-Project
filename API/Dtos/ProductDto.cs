@@ -18,7 +18,7 @@ namespace API.Dtos
         public List<string> Colors { get; set; } = new List<string>();
 
         [Required]
-        public List<string> Sizes { get; set; } = new List<string>();
+        public List<ProductSize> Sizes { get; set; } = new List<ProductSize>();
 
         [Required]
         public Price ProductPrice { get; set; } = new Price(); 

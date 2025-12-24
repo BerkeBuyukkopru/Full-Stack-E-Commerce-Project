@@ -11,6 +11,7 @@ namespace API.Models
         admin
     }
 
+    [BsonIgnoreExtraElements]
     public class User
     {
         [BsonId]
@@ -31,8 +32,7 @@ namespace API.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
-        [BsonRepresentation(BsonType.ObjectId)]
-        public List<string> FavoriteProductIds { get; set; } = new List<string>();
+        public List<FavoriteItem> Favorites { get; set; } = new List<FavoriteItem>();
     }
 
 }

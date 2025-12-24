@@ -1,11 +1,13 @@
-import { Button, Popconfirm, Space, Table, message } from "antd";
+import { Button, Popconfirm, Space, Table, message, Modal } from "antd";
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, EyeOutlined } from "@ant-design/icons";
 
 const ProductPage = () => {
   const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProductStock, setSelectedProductStock] = useState([]);
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -144,6 +146,36 @@ const ProductPage = () => {
       render: (text) => <span>%{text?.discount || 0}</span>,
     },
     {
+      title: "Toplam Stok",
+      dataIndex: "totalStock",
+      key: "totalStock",
+      render: (text) => <b>{text}</b>,
+    },
+    {
+        title: "Stok Detayı",
+        dataIndex: "sizes",
+        key: "stockDetail",
+        render: (sizes, record) => (
+            <Button 
+                icon={<EyeOutlined />} 
+                onClick={() => {
+                    // Check if sizes is a string array (old data) or object array (new data)
+                    let stockData = [];
+                    if (Array.isArray(sizes)) {
+                        stockData = sizes.map(s => {
+                            if (typeof s === 'string') return { size: s, stock: 0 }; // Legacy support
+                            return s;
+                        });
+                    }
+                    setSelectedProductStock(stockData);
+                    setIsModalOpen(true);
+                }}
+            >
+                Görüntüle
+            </Button>
+        )
+    },
+    {
       title: "İşlemler",
       dataIndex: "actions",
       key: "actions",
@@ -193,6 +225,29 @@ const ProductPage = () => {
         loading={loading}
         scroll={{ x: 1000 }}
       />
+      <Modal 
+        title="Stok Detayları" 
+        open={isModalOpen} 
+        onCancel={() => setIsModalOpen(false)}
+        footer={[
+            <Button key="close" onClick={() => setIsModalOpen(false)}>
+                Kapat
+            </Button>
+        ]}
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '8px', backgroundColor: '#f5f5f5', borderRadius: '4px', fontWeight: 'bold' }}>
+                <span>Beden</span>
+                <span>Stok Adedi</span>
+            </div>
+            {selectedProductStock.map((item, index) => (
+                <div key={index} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px', borderBottom: '1px solid #eee' }}>
+                    <span style={{ fontWeight: '500' }}>{item.size.toUpperCase()}</span>
+                    <span>{item.stock}</span>
+                </div>
+            ))}
+        </div>
+      </Modal>
     </>
   );
 };
