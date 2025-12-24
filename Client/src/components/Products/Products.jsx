@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ProductItem from "./ProductItem";
-import Slider from "react-slick";
 import "./Products.css";
 import { message } from "antd";
 
@@ -42,31 +41,26 @@ const Products = () => {
     fetchProducts();
   }, [apiUrl, gender, categoryId]);
 
-  const sliderSettings = {
-    dots: false,
-    infinite: products.length > 3, // Ürün azsa slider bozulmasın
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    autoplay: true,
-    autoplaySpeed: 3000,
-    responsive: [
-      { breakpoint: 992, settings: { slidesToShow: 2 } },
-      { breakpoint: 520, settings: { slidesToShow: 1 } },
-    ],
-  };
+  /* Slider Ayarları kaldırıldı, Grid yapıya geçildi */
+
+  // Başlık belirleme
+  let pageTitle = "Ürünler";
+  if (gender === "Man") {
+      pageTitle = "Erkek Ürünleri";
+  } else if (gender === "Woman") {
+      pageTitle = "Kadın Ürünleri";
+  }
 
   return (
     <section className="products">
       <div className="container">
         <div className="section-title">
-          <h2>Ürünler</h2>
+          <h2>{pageTitle}</h2>
         </div>
-        <div className="product-wrapper product-carousel">
-          <Slider {...sliderSettings}>
+        <div className="product-wrapper product-grid">
             {products.map((product) => (
               <ProductItem productItem={product} key={product._id || product.id} />
             ))}
-          </Slider>
         </div>
       </div>
     </section>

@@ -129,4 +129,12 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+// --- MIGRATION: Fix Legacy Data ---
+using (var scope = app.Services.CreateScope())
+{
+    var productRepo = scope.ServiceProvider.GetRequiredService<ProductRepository>();
+    // Call the migration - this is safe to run on every startup as it checks for String type
+    productRepo.MigrateLegacySizesAsync().GetAwaiter().GetResult();
+}
+
 app.Run();

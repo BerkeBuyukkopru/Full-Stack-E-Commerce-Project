@@ -34,7 +34,7 @@ const ProductItem = ({ productItem }) => {
   };
 
   return (
-    <div className="product-item glide__slide glide__slide--active">
+    <div className="product-item">
       <div className="product-image">
         <Link to={`/product/${productId}`}>
           {/* ✨ Backend'den gelen dizi formatındaki görseller */}
@@ -58,25 +58,7 @@ const ProductItem = ({ productItem }) => {
         {discountPercentage > 0 && (
           <span className="product-discount">-{discountPercentage}%</span>
         )}
-        <div className="product-links">
-          <button
-            className="add-to-cart"
-            onClick={() => addToCart({
-              ...productItem,
-              id: productId, // Context'te standart ID kullanmak için
-              price: discountedPrice, // Sepete indirimli fiyatı gönderiyoruz
-            })}
-          >
-            <i className="bi bi-basket-fill"></i>
-          </button>
-          <button onClick={handleFavoriteClick}>
-            <i className="bi bi-heart-fill" style={{ color: isFavorite ? 'darkred' : 'white' }}></i>
-          </button>
-          <Link to={`/product/${productId}`} className="product-link">
-            <i className="bi bi-eye-fill"></i>
-          </Link>
-          <a href="#"><i className="bi bi-share-fill"></i></a>
-        </div>
+
       </div>
     </div>
   );

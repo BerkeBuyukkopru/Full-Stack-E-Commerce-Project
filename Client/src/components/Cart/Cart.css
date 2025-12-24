@@ -66,18 +66,9 @@
 }
 
 .cart-form table thead th {
-  text-align: start;
+  text-align: center;
   font-size: 14px;
   font-weight: 600;
-}
-
-.cart-form table .product-quantity,
-.cart-form table .product-subtotal {
-  text-align: center;
-}
-
-.cart-form table tbody {
-  border-top: 1px solid whitesmoke;
 }
 
 .cart-form table tbody .cart-item {
@@ -216,4 +207,38 @@
     flex-direction: column;
     row-gap: 30px;
   }
+}
+
+/* Column Widths and Alignment */
+.cart-form table th,
+.cart-form table td {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+/* Specific overrides if needed, but important should handle it. 
+   If Product Name needs to be left aligned, remove !important there.
+   For now, strictly following user request to center ALL. */
+
+.cart-form table .product-thumbnail {
+  width: 90px;
+}
+
+.cart-form table .product-name {
+  width: auto;
+  min-width: 150px;
+}
+
+.cart-form table .product-color, 
+.cart-form table .product-size {
+  width: 80px;
+}
+
+.cart-form table .product-price,
+.cart-form table .product-subtotal {
+  width: 120px;
+}
+
+.cart-form table .product-quantity {
+  width: 150px;
 }

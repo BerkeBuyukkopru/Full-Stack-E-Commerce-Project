@@ -93,5 +93,50 @@ namespace API.Repositories
             return await _products.Find(filter).ToListAsync();
         }
 
+
+        // --- Migration Helper ---
+        public async Task MigrateLegacySizesAsync()
+        {
+            // 1. Fetch all documents as raw BsonDocuments to avoid deserialization error
+            var rawProducts = await _products.Database.GetCollection<BsonDocument>("products").Find(new BsonDocument()).ToListAsync();
+
+            foreach (var doc in rawProducts)
+            {
+                if (doc.Contains("Sizes") && doc["Sizes"].IsBsonArray)
+                {
+                    var sizesArray = doc["Sizes"].AsBsonArray;
+                    
+                    // Check if the array contains Strings (Legacy format)
+                    if (sizesArray.Count > 0 && sizesArray[0].IsString)
+                    {
+                        var newSizesList = new BsonArray();
+                        foreach (var size in sizesArray) 
+                        {
+                            // Convert string size to object with default stock
+                            var sizeObj = new BsonDocument
+                            {
+                                { "Size", size.AsString },
+                                { "Stock", 5 } // Default stock for migrated items
+                            };
+                            newSizesList.Add(sizeObj);
+                        }
+
+                        // Calculate TotalStock
+                        var totalStock = newSizesList.Count * 5;
+
+                        // Create update definition
+                        var updates = Builders<BsonDocument>.Update
+                            .Set("Sizes", newSizesList)
+                            .Set("TotalStock", totalStock);
+
+                        // Update the document
+                         await _products.Database.GetCollection<BsonDocument>("products").UpdateOneAsync(
+                            new BsonDocument("_id", doc["_id"]),
+                            updates
+                        );
+                    }
+                }
+            }
+        }
     }
 }

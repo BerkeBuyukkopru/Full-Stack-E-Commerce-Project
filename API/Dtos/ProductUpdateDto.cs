@@ -8,7 +8,7 @@ namespace API.Dtos
         public List<string>? Img { get; set; }
         public string? Description { get; set; }
         public List<string>? Colors { get; set; }
-        public List<string>? Sizes { get; set; }
+        public List<ProductSize>? Sizes { get; set; }
         public Price? ProductPrice { get; set; }
         public string? Category { get; set; }
         public string? Gender { get; set; }

@@ -10,8 +10,10 @@ const CartTable = () => {
       <thead>
         <tr>
           <th className="product-thumbnail">&nbsp;</th>
-          <th className="product-thumbnail">&nbsp;</th>
           <th className="product-name">Ürün</th>
+          <th className="product-color">Renk</th>
+
+          <th className="product-size">Beden</th>
           <th className="product-price">Fiyat</th>
           <th className="product-quantity">Adet</th>
           <th className="product-subtotal">Fiyat</th>
@@ -19,7 +21,7 @@ const CartTable = () => {
       </thead>
       <tbody className="cart-wrapper">
         {cartItems.map((item) => (
-          <CartItem cartItem={item} key={item.id} />
+          <CartItem cartItem={item} key={`${item.id}-${item.size}-${item.color}`} />
         ))}
       </tbody>
     </table>

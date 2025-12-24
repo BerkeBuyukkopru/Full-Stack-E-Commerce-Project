@@ -39,26 +39,39 @@ const FavoritesProvider = ({ children }) => {
 
     // Optimistic Update
     const productItemId = product._id || product.id;
-    const isAlreadyFavorite = favorites.some((fav) => (fav._id || fav.id) === productItemId);
+    const isAlreadyFavorite = favorites.some((fav) => 
+        (fav._id || fav.id) === productItemId && 
+        fav.selectedSize === product.selectedSize && 
+        fav.selectedColor === product.selectedColor
+    );
     
     if (isAlreadyFavorite) return;
 
     setFavorites((prev) => [...prev, product]);
 
     try {
-       const productId = product._id || product.id;
+       const payload = {
+           productId: productItemId,
+           size: product.selectedSize,
+           color: product.selectedColor
+       };
+
        const response = await fetch(`${apiUrl}/users/favorites`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         credentials: "include", // Cookie'yi otomatik gönder
-        body: JSON.stringify(productId),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
            // Revert if failed
-           setFavorites((prev) => prev.filter((item) => (item._id || item.id) !== productId));
+           setFavorites((prev) => prev.filter((item) => 
+                !((item._id || item.id) === productItemId && 
+                  item.selectedSize === product.selectedSize && 
+                  item.selectedColor === product.selectedColor)
+           ));
            message.error("Favorilere eklenirken hata oluştu.");
       } else {
           message.success("Favorilere eklendi.");
@@ -66,24 +79,38 @@ const FavoritesProvider = ({ children }) => {
 
     } catch (error) {
       console.log(error);
-      setFavorites((prev) => prev.filter((item) => (item._id || item.id) !== (product._id || product.id)));
+      setFavorites((prev) => prev.filter((item) => 
+            !((item._id || item.id) === productItemId && 
+              item.selectedSize === product.selectedSize && 
+              item.selectedColor === product.selectedColor)
+      ));
     }
   };
 
-  const removeFromFavorites = async (productId) => {
+  const removeFromFavorites = async (productId, size, color) => {
     if (!user) return;
 
     // Optimistic Update
-    setFavorites((prev) => prev.filter((item) => (item._id || item.id) !== productId));
+    setFavorites((prev) => prev.filter((item) => 
+        !((item._id || item.id) === productId && 
+          item.selectedSize === size && 
+          item.selectedColor === color)
+    ));
 
     try {
+      const payload = {
+          productId: productId,
+          size: size,
+          color: color
+      };
+
       const response = await fetch(`${apiUrl}/users/favorites`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
         credentials: "include", // Cookie'yi otomatik gönder
-        body: JSON.stringify(productId),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {

@@ -1,39 +1,88 @@
 import PropTypes from "prop-types";
 import "./Info.css";
-import { useContext, useRef } from "react";
-import { CartContext } from "../../../context/CartContext"; // Senin context yolun
+import { useContext, useRef, useState } from "react";
+import { CartContext } from "../../../context/CartContext";
 import { FavoritesContext } from "../../../context/FavoritesContext";
+import { message } from "antd";
 
 const Info = ({ singleProduct }) => {
   const quantityRef = useRef();
-  const { addToCart, cartItems } = useContext(CartContext);
-  const { favorites, addToFavorites, removeFromFavorites } = useContext(FavoritesContext); // FavoritesContext
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
 
-  // ✨ Backend DTO Uyumu: productPrice üzerinden verileri alıyoruz
+  const { addToCart, cartItems } = useContext(CartContext);
+  const { favorites, addToFavorites, removeFromFavorites } = useContext(FavoritesContext);
+
   const originalPrice = singleProduct.productPrice?.current || 0;
   const discountPercentage = singleProduct.productPrice?.discount || 0;
-
-  // İndirimli fiyatı hesaplama
   const discountedPrice = originalPrice - (originalPrice * discountPercentage) / 100;
 
-  // Ürünün sepette olup olmadığını kontrol etme
   const productId = singleProduct._id || singleProduct.id;
-  const isFilteredCard = cartItems.find(
-    (cartItem) => cartItem.id === productId
+  
+  // Favori kontrolü (ID, Beden, Renk eşleşmeli - ama arayüzde sadece "Bu ürün favoride mi?" diye genel bakıyoruz genelde
+  // Ancak kullanıcı spesifik bir varyasyonu favoriye eklediyse butonun durumu değişmeli mi?
+  // Kullanıcı deneyimi için: Eğer bu varyasyon favorideyse "Favoriden Çıkar", yoksa "Ekle".
+  // Şimdilik composite key ile kontrol edelim.
+  const isFavorite = favorites.some((fav) => 
+      (fav._id || fav.id) === productId && 
+      fav.selectedSize === selectedSize?.size && 
+      fav.selectedColor === selectedColor
   );
 
-  const isFavorite = favorites.some((fav) => (fav._id || fav.id) === productId);
+  // Beden verilerini normalize et (string[] veya object[] gelebilir)
+  const availableSizes = Array.isArray(singleProduct.sizes) 
+    ? singleProduct.sizes.map(s => {
+        if (typeof s === 'string') return { size: s, stock: 10 }; // Legacy veri varsayılan stok
+        return s;
+    })
+    : [];
 
-  const handleFavoriteClick = (e) => {
-      e.preventDefault(); // Link ise yönlendirmeyi engelle
+  const handleAddToCart = () => {
+      if (!selectedSize) {
+          message.warning("Lütfen bir beden seçiniz.");
+          return;
+      }
+      if (singleProduct.colors && singleProduct.colors.length > 0 && !selectedColor) {
+           message.warning("Lütfen bir renk seçiniz.");
+           return;
+      }
+      
+      addToCart({
+          ...singleProduct,
+          id: productId,
+          price: discountedPrice,
+          quantity: parseInt(quantityRef.current.value),
+          size: selectedSize.size,
+          color: selectedColor
+      });
+      message.success("Ürün sepete eklendi.");
+  };
+
+  const handleToggleFavorite = () => {
+      if (!selectedSize) {
+          message.warning("Favoriye eklemek için beden seçiniz.");
+          return;
+      }
+      if (singleProduct.colors && singleProduct.colors.length > 0 && !selectedColor) {
+           message.warning("Favoriye eklemek için renk seçiniz.");
+           return;
+      }
+
+      // API backend 'ToggleFavorite' expects { ProductId, Size, Color }
+      // But FavoritesContext currently expects a product object?
+      // We will assume FavoritesContext is updated or will be updated to handle this data.
+      // We pass identifying info.
+      
       if (isFavorite) {
-          removeFromFavorites(productId);
+           removeFromFavorites(productId, selectedSize.size, selectedColor);
       } else {
-          addToFavorites({
+           addToFavorites({
               ...singleProduct,
-              id: productId, // Tutarlılık için
-              price: discountedPrice
-          });
+              id: productId,
+              price: discountedPrice,
+              selectedSize: selectedSize.size, // Context naming convention
+              selectedColor: selectedColor
+           });
       }
   };
 
@@ -55,7 +104,6 @@ const Info = ({ singleProduct }) => {
         <strong className="new-price">{discountedPrice.toFixed(2)} TL</strong>
       </div>
       
-      {/* ✨ HTML açıklamayı render etmek için kritik kısım */}
       <div
         className="product-description"
         dangerouslySetInnerHTML={{ __html: singleProduct.description }}
@@ -68,16 +116,23 @@ const Info = ({ singleProduct }) => {
               <span>Renk</span>
             </div>
             <div className="colors-wrapper">
-              {/* ✨ Backend'den gelen renk dizisini mapliyoruz */}
               {singleProduct.colors.map((color, index) => (
-                <div className="color-wrapper" key={index}>
-                  <label
-                    style={{
-                      backgroundColor: `#${color}`, // Renk kodlarının önünde # yoksa ekliyoruz
-                    }}
-                  >
-                    <input type="radio" name="product-color" />
-                  </label>
+                <div 
+                    className={`color-wrapper ${selectedColor === color ? "active" : ""}`} 
+                    key={index} 
+                    style={{marginRight: 5}}
+                    onClick={() => setSelectedColor(color)}
+                >
+                   <span style={{ 
+                       border: selectedColor === color ? '2px solid black' : '1px solid #ddd', 
+                       padding: '5px 10px', 
+                       fontSize: '14px',
+                       borderRadius: '4px',
+                       backgroundColor: selectedColor === color ? '#f0f0f0' : 'white',
+                       display: 'block'
+                   }}>
+                       {color}
+                   </span>
                 </div>
               ))}
             </div>
@@ -87,10 +142,18 @@ const Info = ({ singleProduct }) => {
               <span>Beden</span>
             </div>
             <div className="values-list">
-              {/* ✨ Backend'den gelen beden dizisini mapliyoruz */}
-              {singleProduct.sizes.map((size, index) => (
-                <span key={index} className={index === 0 ? "active" : ""}>
-                  {size.toUpperCase()}
+              {availableSizes.map((sizeObj, index) => (
+                <span 
+                    key={index} 
+                    className={selectedSize?.size === sizeObj.size ? "active" : ""}
+                    onClick={() => setSelectedSize(sizeObj)}
+                    style={{ 
+                        cursor: 'pointer',
+                        opacity: sizeObj.stock > 0 ? 1 : 0.5,
+                        pointerEvents: sizeObj.stock > 0 ? 'auto' : 'none'
+                    }}
+                >
+                  {sizeObj.size.toUpperCase()} 
                 </span>
               ))}
             </div>
@@ -107,32 +170,17 @@ const Info = ({ singleProduct }) => {
               className="btn btn-lg btn-primary"
               id="add-to-cart"
               type="button"
-              disabled={isFilteredCard}
-              onClick={() =>
-                addToCart({
-                  ...singleProduct,
-                  id: productId, // Context'te standart ID yapısı
-                  price: discountedPrice, // İndirimli fiyatı gönderiyoruz
-                  quantity: parseInt(quantityRef.current.value),
-                })
-              }
+              onClick={handleAddToCart}
             >
               Sepete Ekle
             </button>
             <button
               className="btn btn-lg btn-primary"
               type="button"
-              disabled={isFavorite}
-              onClick={() =>
-                  addToFavorites({
-                      ...singleProduct,
-                      id: productId,
-                      price: discountedPrice
-                  })
-              }
-              style={{ marginLeft: "10px", backgroundColor: isFavorite ? "#ccc" : "" }}
+              onClick={handleToggleFavorite}
+              style={{ marginLeft: "10px", backgroundColor: isFavorite ? "red" : "", borderColor: isFavorite ? "red" : "" }}
             >
-              Favorilere Ekle
+              {isFavorite ? "Favorilerden Çıkar" : "Favorilere Ekle"}
             </button>
           </div>
           <div className="product-extra-buttons">
@@ -148,21 +196,9 @@ const Info = ({ singleProduct }) => {
         </div>
       </form>
       <div className="divider"></div>
-      <div className="product-meta">
-        <div className="product-sku">
-          <span>SKU:</span>
-          <strong>BE45VGRT</strong>
-        </div>
-        <div className="product-categories">
-          <span>Kategori:</span>
-          {/* ✨ Ürün nesnesindeki kategori adını (populat edilmişse) basıyoruz */}
-          <strong>{singleProduct.category?.name || "Genel"}</strong>
-        </div>
-        <div className="product-tags">
-          <span>Tag:</span>
-          <a href="#">siyah</a>,<a href="#">beyaz</a>
-        </div>
-      </div>
+      
+      {/* İstenmeyen kısımlar (SKU, Kategori, Tags) kaldırıldı */}
+
     </div>
   );
 };

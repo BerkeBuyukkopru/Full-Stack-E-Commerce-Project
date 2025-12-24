@@ -73,9 +73,7 @@ const CartCoupon = () => {
           {appliedCoupon ? "Uygulandı" : "Kupon Uygula"}
         </button>
       </div>
-      <div className="update-cart">
-        <button className="btn">Sepeti Güncelle</button>
-      </div>
+
     </div>
   );
 };

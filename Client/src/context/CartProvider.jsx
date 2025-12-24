@@ -23,13 +23,17 @@ const CartProvider = ({ children }) => {
   }, [cartItems, appliedCoupon]);
 
   const addToCart = (cartItem) => {
+    // cartItem içinde { ...product, size: "M", color: "Red" } vb. gelmeli
+    // Sepeti (id + size + color) kombinasyonuyla kontrol et
     setCartItems((prevCart) => {
-      const existingItem = prevCart.find((item) => item.id === cartItem.id);
+      const existingItem = prevCart.find(
+        (item) => item.id === cartItem.id && item.size === cartItem.size && item.color === cartItem.color
+      );
       
       if (existingItem) {
         return prevCart.map((item) =>
-          item.id === cartItem.id
-            ? { ...item, quantity: item.quantity + 1 }
+          item.id === cartItem.id && item.size === cartItem.size && item.color === cartItem.color
+            ? { ...item, quantity: item.quantity + (cartItem.quantity || 1) }
             : item
         );
       } else {
@@ -41,18 +45,20 @@ const CartProvider = ({ children }) => {
     });
   };
 
-  const removeFromCart = (itemId) => {
-    const filteredCartItems = cartItems.filter((cartItem) => cartItem.id !== itemId);
+  const removeFromCart = (itemId, itemSize, itemColor) => {
+    // Silerken de id + size + color
+    const filteredCartItems = cartItems.filter(
+        (cartItem) => !(cartItem.id === itemId && cartItem.size === itemSize && cartItem.color === itemColor)
+    );
     setCartItems(filteredCartItems);
-    // Eğer sepette ürün kalmazsa kuponu da sıfırlayalım
     if (filteredCartItems.length === 0) setAppliedCoupon(null);
   };
 
-  const updateItemQuantity = (itemId, quantity) => {
+  const updateItemQuantity = (itemId, itemSize, itemColor, quantity) => {
     if (quantity < 1) return;
     setCartItems((prevCart) =>
       prevCart.map((item) =>
-        item.id === itemId ? { ...item, quantity: quantity } : item
+        (item.id === itemId && item.size === itemSize && item.color === itemColor) ? { ...item, quantity: quantity } : item
       )
     );
   };
