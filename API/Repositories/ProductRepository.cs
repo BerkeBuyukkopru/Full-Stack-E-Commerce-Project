@@ -138,5 +138,26 @@ namespace API.Repositories
                 }
             }
         }
+        public async Task DecreaseStockAsync(List<API.Dtos.BasketItemDto> basketItems)
+        {
+            foreach (var item in basketItems)
+            {
+                var product = await GetByIdAsync(item.Id);
+                if (product != null)
+                {
+                    var sizeToUpdate = product.Sizes.FirstOrDefault(s => s.Size == item.Size);
+                    if (sizeToUpdate != null)
+                    {
+                        sizeToUpdate.Stock -= item.Quantity;
+                        if (sizeToUpdate.Stock < 0) sizeToUpdate.Stock = 0; // Prevent negative stock
+                    }
+                    
+                    // Recalculate TotalStock
+                    product.TotalStock = product.Sizes.Sum(s => s.Stock);
+
+                    await UpdateAsync(product.Id!, product);
+                }
+            }
+        }
     }
 }

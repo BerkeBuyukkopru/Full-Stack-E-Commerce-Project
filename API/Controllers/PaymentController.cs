@@ -18,11 +18,13 @@ namespace API.Controllers
     {
         private readonly IyzicoPaymentOptions _options;
         private readonly API.Repositories.OrderRepository _orderRepository;
+        private readonly API.Repositories.ProductRepository _productRepository;
 
-        public PaymentController(IOptions<IyzicoPaymentOptions> options, API.Repositories.OrderRepository orderRepository)
+        public PaymentController(IOptions<IyzicoPaymentOptions> options, API.Repositories.OrderRepository orderRepository, API.Repositories.ProductRepository productRepository)
         {
             _options = options.Value;
             _orderRepository = orderRepository;
+            _productRepository = productRepository;
         }
 
         [HttpPost("checkout")]
@@ -156,6 +158,9 @@ namespace API.Controllers
                     order.Status = "PaymentSuccess";
                     order.PaymentId = checkoutForm.PaymentId;
                     await _orderRepository.UpdateAsync(order.Id!, order);
+                    
+                    // Decrease Stock
+                    await _productRepository.DecreaseStockAsync(order.BasketItems);
                 }
 
                 return Redirect("http://localhost:5173/payment/success");

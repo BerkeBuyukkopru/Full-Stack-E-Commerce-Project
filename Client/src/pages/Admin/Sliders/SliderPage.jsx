@@ -1,4 +1,5 @@
 import { Button, Popconfirm, Table, message } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -87,7 +88,11 @@ const SliderPage = () => {
     <div>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
             <h2>Slider Yönetimi</h2>
-            <Button type="primary" onClick={() => navigate("/admin/sliders/create")}>
+            <Button 
+                type="primary" 
+                icon={<PlusOutlined />}
+                onClick={() => navigate("/admin/sliders/create")}
+            >
                 Yeni Slider Ekle
             </Button>
         </div>

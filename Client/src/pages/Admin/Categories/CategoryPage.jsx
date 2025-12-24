@@ -1,4 +1,5 @@
 import { Button, Popconfirm, Table, message, Space } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -8,7 +9,6 @@ const CategoryPage = () => {
 
   const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-
 
   // Kategori listesini Backend'den çeken fonksiyon
   const fetchCategories = useCallback(async () => {
@@ -135,13 +135,24 @@ const CategoryPage = () => {
   ];
 
   return (
-    <Table
-      dataSource={dataSource}
-      columns={columns}
-      rowKey={(record) => record.id || record._id}
-      loading={loading}
-      scroll={{ x: 700 }}
-    />
+    <>
+      <div style={{ marginBottom: 16, textAlign: "right" }}>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => navigate("/admin/categories/create")}
+        >
+          Yeni Kategori Ekle
+        </Button>
+      </div>
+      <Table
+        dataSource={dataSource}
+        columns={columns}
+        rowKey={(record) => record.id || record._id}
+        loading={loading}
+        scroll={{ x: 700 }}
+      />
+    </>
   );
 };
 

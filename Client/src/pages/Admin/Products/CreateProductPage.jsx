@@ -49,22 +49,17 @@ const CreateProductPage = () => {
 
   // Ürün oluşturma (POST) fonksiyonu
   const onFinish = async (values) => {
-    // Dizi dönüşümleri aynı kalır (doğru)
-    const imgLinks = values.img
-      .split("\n")
-      .map((link) => link.trim())
-      .filter((link) => link.length > 0);
-    const colors = values.colors
-      .split("\n")
-      .map((color) => color.trim())
-      .filter((color) => color.length > 0);
+    // Görseller ve Renkler Form.List'ten array of objects olarak gelebilir veya primitives.
+    // images: [{ url: "..." }] -> ["..."]
+    // colors: [{ color: "..." }] -> ["..."]
+    // Ancak Form.List primitive array (sadece string array) desteklemez, obje kullanırız.
     
-    // Bedenler artık doğrudan formdan array olarak geliyor
+    const imgLinks = values.img ? values.img.map(i => i.url) : [];
+    const colors = values.colors ? values.colors.map(c => c.color) : [];
     const sizes = values.sizes;
 
     setLoading(true);
     try {
-      // Rota düzeltildi: /product (Sizin verdiğiniz rotaya göre)
       const response = await fetch(`${apiUrl}/product`, {
         method: "POST",
         headers: {
@@ -112,7 +107,13 @@ const CreateProductPage = () => {
           layout="vertical"
           onFinish={onFinish}
           form={form}
+          initialValues={{
+              sizes: [{ size: "", stock: 0 }],
+              colors: [{ color: "" }],
+              img: [{ url: "" }]
+          }}
         >
+          {/* ... Name, Category, Price, Description fields remain the same ... */}
           <Form.Item
             label="Ürün İsmi"
             name="name"
@@ -134,10 +135,6 @@ const CreateProductPage = () => {
                 if (selectedCategory) {
                   if (selectedCategory.gender !== "Unisex") {
                     form.setFieldsValue({ gender: selectedCategory.gender });
-                  } else {
-                     // If category becomes Unisex, let user choose, default to Unisex if current is invalid? 
-                     // Or just keep current. Let's reset to Unisex if it was forced before? 
-                     // Actually requirement says: "if Unisex, allow user to select".
                   }
                 }
               }}
@@ -186,7 +183,6 @@ const CreateProductPage = () => {
             label="Fiyat "
             name="current"
             rules={[{ required: true, message: "Lütfen ürün fiyatını girin!" }]}
-            style={{ flex: 1 }}
           >
             <InputNumber
               min={0}
@@ -205,42 +201,116 @@ const CreateProductPage = () => {
               },
             ]}
           >
-            <ReactQuill
-              theme="snow"
-              style={{
-                backgroundColor: "white",
-              }}
-            />
+            <ReactQuill theme="snow" style={{ backgroundColor: "white" }} />
           </Form.Item>
 
+          {/* DYNAMIC IMAGES INPUT */}
           <Form.Item
             label="Ürün Görselleri (Linkler)"
             name="img"
             rules={[
               {
                 required: true,
-                message: "Lütfen en az 4 ürün görsel linki girin!",
+                validator: async (_, names) => {
+                   if (!names || names.length < 4) {
+                       return Promise.reject(new Error("Lütfen en az 4 ürün görsel linki girin!"));
+                   }
+                   return Promise.resolve();
+                },
               },
             ]}
           >
-            <Input.TextArea
-              placeholder="Her bir görsel linkini yeni bir satıra yazın."
-              autoSize={{ minRows: 4 }}
-            />
-          </Form.Item>
-          <Form.Item
-            label="Ürün Renkleri (Hex Kodları veya İsimler)"
-            name="colors"
-            rules={[
-              { required: true, message: "Lütfen en az 1 ürün rengi girin!" },
-            ]}
-          >
-            <Input.TextArea
-              placeholder="Her bir renk kodunu yeni bir satıra yazın."
-              autoSize={{ minRows: 4 }}
-            />
+            <Form.List name="img">
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, ...restField }) => (
+                    <Space
+                      key={key}
+                      style={{ display: "flex", marginBottom: 8 }}
+                      align="baseline"
+                    >
+                      <Form.Item
+                        {...restField}
+                        name={[name, "url"]}
+                        rules={[{ required: true, message: "Görsel linki giriniz" }]}
+                        style={{ flex: 1, width: "400px" }}
+                      >
+                        <Input placeholder="Görsel Linki (https://...)" />
+                      </Form.Item>
+                      <MinusCircleOutlined onClick={() => remove(name)} />
+                    </Space>
+                  ))}
+                  <Form.Item>
+                    <Button
+                      type="dashed"
+                      onClick={() => add()}
+                      block
+                      icon={<PlusOutlined />}
+                    >
+                      Görsel Ekle
+                    </Button>
+                  </Form.Item>
+                </>
+              )}
+            </Form.List>
           </Form.Item>
 
+          {/* DYNAMIC COLORS INPUT - LIMITED TO 1 */}
+          <Form.Item
+            label="Ürün Rengi (Tekil)"
+            name="colors"
+            rules={[
+                {
+                  required: true,
+                  validator: async (_, names) => {
+                     if (!names || names.length < 1) {
+                         return Promise.reject(new Error("Lütfen 1 renk girin!"));
+                     }
+                     return Promise.resolve();
+                  },
+                },
+              ]}
+          >
+            <Form.List name="colors">
+              {(fields, { add, remove }) => (
+                <>
+                  {fields.map(({ key, name, ...restField }) => (
+                    <Space
+                      key={key}
+                      style={{ display: "flex", marginBottom: 8 }}
+                      align="baseline"
+                    >
+                      <Form.Item
+                        {...restField}
+                        name={[name, "color"]}
+                        rules={[{ required: true, message: "Renk giriniz" }]}
+                        style={{ flex: 1, width: "200px" }}
+                      >
+                        <Input placeholder="Renk (Örn: Mavi, Red, #FFF)" />
+                      </Form.Item>
+                      {/* Only show remove button if user added it, or maybe allow removing the single one to clear? */}
+                      <MinusCircleOutlined onClick={() => remove(name)} />
+                    </Space>
+                  ))}
+                  {/* LIMIT ADD BUTTON: ONLY SHOW IF Less than 1 item */}
+                  {fields.length < 1 && (
+                      <Form.Item>
+                        <Button
+                          type="dashed"
+                          onClick={() => add()}
+                          block
+                          icon={<PlusOutlined />}
+                        >
+                          Renk Ekle
+                        </Button>
+                      </Form.Item>
+                  )}
+                </>
+              )}
+            </Form.List>
+          </Form.Item>
+
+          {/* DYNAMIC SIZES INPUT (EXISTING) */}
           <Form.Item
             label="Ürün Bedenleri"
             name="sizes"
@@ -251,7 +321,7 @@ const CreateProductPage = () => {
               },
             ]}
           >
-            <Form.List name="sizes" initialValue={[{ size: "", stock: 0 }]}>
+            <Form.List name="sizes">
               {(fields, { add, remove }) => (
                 <>
                   {fields.map(({ key, name, ...restField }) => (
