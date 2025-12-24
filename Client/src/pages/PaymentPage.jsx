@@ -32,7 +32,9 @@ const PaymentPage = () => {
                 Name: item.name,
                 Category: "General",
                 Price: item.price,
-                Quantity: item.quantity
+                Quantity: item.quantity,
+                Size: item.size || "",
+                Color: item.color || ""
             })),
             TotalPrice: total
         };

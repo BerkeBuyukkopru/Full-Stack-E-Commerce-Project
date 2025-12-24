@@ -1,4 +1,5 @@
 import { Button, Popconfirm, Table, message, Space } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -133,13 +134,24 @@ const CouponPage = () => {
   ];
 
   return (
-    <Table
-      dataSource={dataSource}
-      columns={columns}
-      rowKey={(record) => record.id || record._id}
-      loading={loading}
-      scroll={{ x: 700 }}
-    />
+    <>
+      <div style={{ marginBottom: 16, textAlign: "right" }}>
+        <Button
+          type="primary"
+          icon={<PlusOutlined />}
+          onClick={() => navigate("/admin/coupons/create")}
+        >
+          Yeni Kupon Ekle
+        </Button>
+      </div>
+      <Table
+        dataSource={dataSource}
+        columns={columns}
+        rowKey={(record) => record.id || record._id}
+        loading={loading}
+        scroll={{ x: 700 }}
+      />
+    </>
   );
 };
 

@@ -1,6 +1,7 @@
 import { Table, Button, Space, Popconfirm, message } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const BlogListPage = () => {
   const [dataSource, setDataSource] = useState([]);
@@ -101,7 +102,11 @@ const BlogListPage = () => {
     <div style={{ padding: "20px" }}>
         <div style={{display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"20px"}}>
             <h2>Blog Listesi</h2>
-            <Button type="primary" onClick={() => navigate("/admin/blogs/create")}>
+            <Button 
+                type="primary" 
+                icon={<PlusOutlined />}
+                onClick={() => navigate("/admin/blogs/create")}
+            >
                 Yeni Blog Ekle
             </Button>
         </div>
