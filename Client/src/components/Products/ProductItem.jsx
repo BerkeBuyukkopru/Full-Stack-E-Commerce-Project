@@ -53,7 +53,9 @@ const ProductItem = ({ productItem }) => {
         </ul>
         <div className="product-prices">
           <strong className="new-price">{discountedPrice.toFixed(2)} TL</strong>
-          <span className="old-price">{originalPrice.toFixed(2)} TL</span>
+          {discountPercentage > 0 && (
+            <span className="old-price">{originalPrice.toFixed(2)} TL</span>
+          )}
         </div>
         {discountPercentage > 0 && (
           <span className="product-discount">-{discountPercentage}%</span>

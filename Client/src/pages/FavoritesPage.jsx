@@ -3,6 +3,8 @@ import { FavoritesContext } from "../context/FavoritesContext";
 import { CartContext } from "../context/CartContext";
 import { Table, Button, Space, message } from "antd";
 
+import "./FavoritesPage.css";
+
 const FavoritesPage = () => {
   const { favorites, removeFromFavorites } = useContext(FavoritesContext);
   const { addToCart, cartItems } = useContext(CartContext);
@@ -66,7 +68,7 @@ const FavoritesPage = () => {
         return (
           <Space>
             <Button 
-              type="primary" 
+              className="add-to-cart-btn"
               onClick={() => {
                    if (isProductInCart) {
                        message.warning("Bu ürün zaten sepetinizde ekli.");
@@ -90,7 +92,7 @@ const FavoritesPage = () => {
               Sepete Ekle
             </Button>
             <Button 
-              danger 
+              className="remove-from-fav-btn"
               onClick={() => removeFromFavorites(record._id || record.id, record.selectedSize, record.selectedColor)}
             >
               Favorilerden Kaldır

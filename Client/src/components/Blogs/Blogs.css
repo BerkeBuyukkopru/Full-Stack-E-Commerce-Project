@@ -1,7 +1,36 @@
 /*! blogs start  */
 .blogs {
-    margin-bottom: 30px;
-  }
+    margin-bottom: 50px;
+}
+
+.blogs-carousel {
+    margin: 0 40px;
+}
+
+/* Reusing carousel button styles if not global, ensuring they are present here */
+.carousel-button {
+    position: absolute;
+    top: 55%; 
+    transform: translateY(-50%);
+    z-index: 10;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    border: none;
+    background-color: white;
+}
+
+.carousel-button:hover {
+    color: white !important;
+    background-color: #000 !important;
+    border-color: #000 !important;
+}
+
+.prev-button {
+    left: 0;
+}
+
+.next-button {
+    right: 0;
+}
   
   .blogs .blog-list {
     display: grid;

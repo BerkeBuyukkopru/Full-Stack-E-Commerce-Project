@@ -25,7 +25,9 @@ const Cart = () => {
             </div>
           </div>
         ) : (
-          <h2>Sepette hiç ürün yok!</h2>
+          <div className="empty-cart-message">
+            <h2>Sepette hiç ürün yok!</h2>
+          </div>
         )}
       </div>
     </section>
