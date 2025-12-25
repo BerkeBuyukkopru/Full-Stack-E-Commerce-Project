@@ -1,11 +1,13 @@
+import { useEffect, useState, useRef } from "react";
 import CategoryItem from "./CategoryItem";
-import { useEffect, useState } from "react";
-import "./Categories.css";
-import { message } from "antd";
+import "./Categories.css"; // We keep this but will modify it or override styles
+import { message, Carousel, Button } from "antd";
+import { LeftOutlined, RightOutlined } from "@ant-design/icons";
 
 const Categories = () => {
   const [categories, setCategories] = useState([]);
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const carouselRef = useRef(null);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -25,20 +27,79 @@ const Categories = () => {
     fetchCategories();
   }, [apiUrl]);
 
+  const onChange = (currentSlide) => {
+    // console.log(currentSlide);
+  };
+
+  const responsiveSettings = [
+    {
+      breakpoint: 992,
+      settings: {
+        slidesToShow: 3,
+        slidesToScroll: 1,
+      },
+    },
+    {
+      breakpoint: 768,
+      settings: {
+        slidesToShow: 2,
+        slidesToScroll: 1,
+      },
+    },
+    {
+      breakpoint: 576,
+      settings: {
+        slidesToShow: 1,
+        slidesToScroll: 1,
+      },
+    },
+  ];
+
   return (
     <section className="categories">
-      <div className="container">
+      <div className="container" style={{ position: "relative" }}>
         <div className="section-title">
-          <h2>Kategoriler</h2> 
+          <h2>Kategoriler</h2>
         </div>
-        <ul className="category-list">
+        
+        {/* Custom Navigation Buttons */}
+        <Button 
+            shape="circle" 
+            icon={<LeftOutlined />} 
+            className="carousel-button prev-button"
+            onClick={() => carouselRef.current.prev()}
+        />
+        
+        <Carousel 
+            ref={carouselRef}
+            afterChange={onChange}
+            slidesToShow={4}
+            slidesToScroll={1}
+            autoplay
+            autoplaySpeed={10000} // 10 seconds
+            infinite
+            draggable
+            dots={false}
+            responsive={responsiveSettings}
+            className="categories-carousel"
+        >
           {categories.map((category) => (
-            <CategoryItem
-              key={category._id || category.id}
-              category={category}
-            />
+            <div key={category._id || category.id} className="carousel-item-wrapper">
+                {/* Wrapper div essential because Antd Carousel injects styles on immediate children */}
+                <div style={{ padding: "0 10px" }}> 
+                    <CategoryItem category={category} />
+                </div>
+            </div>
           ))}
-        </ul>
+        </Carousel>
+
+         <Button 
+            shape="circle" 
+            icon={<RightOutlined />} 
+            className="carousel-button next-button"
+            onClick={() => carouselRef.current.next()}
+        />
+
       </div>
     </section>
   );

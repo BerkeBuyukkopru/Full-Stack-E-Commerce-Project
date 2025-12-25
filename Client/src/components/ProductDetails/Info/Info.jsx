@@ -100,7 +100,9 @@ const Info = ({ singleProduct }) => {
         <span>2 Yorum</span>
       </div>
       <div className="product-price">
-        <s className="old-price">{originalPrice.toFixed(2)} TL</s>
+        {discountPercentage > 0 && (
+          <s className="old-price">{originalPrice.toFixed(2)} TL</s>
+        )}
         <strong className="new-price">{discountedPrice.toFixed(2)} TL</strong>
       </div>
       
@@ -120,19 +122,9 @@ const Info = ({ singleProduct }) => {
                 <div 
                     className={`color-wrapper ${selectedColor === color ? "active" : ""}`} 
                     key={index} 
-                    style={{marginRight: 5}}
                     onClick={() => setSelectedColor(color)}
                 >
-                   <span style={{ 
-                       border: selectedColor === color ? '2px solid black' : '1px solid #ddd', 
-                       padding: '5px 10px', 
-                       fontSize: '14px',
-                       borderRadius: '4px',
-                       backgroundColor: selectedColor === color ? '#f0f0f0' : 'white',
-                       display: 'block'
-                   }}>
-                       {color}
-                   </span>
+                   <span>{color.toUpperCase()}</span>
                 </div>
               ))}
             </div>
@@ -178,20 +170,10 @@ const Info = ({ singleProduct }) => {
               className="btn btn-lg btn-primary"
               type="button"
               onClick={handleToggleFavorite}
-              style={{ marginLeft: "10px", backgroundColor: isFavorite ? "red" : "", borderColor: isFavorite ? "red" : "" }}
+              style={{ marginLeft: "10px", backgroundColor: isFavorite ? "darkred" : "", borderColor: isFavorite ? "darkred" : "" }}
             >
               {isFavorite ? "Favorilerden Çıkar" : "Favorilere Ekle"}
             </button>
-          </div>
-          <div className="product-extra-buttons">
-            <a href="#">
-              <i className="bi bi-globe"></i>
-              <span>Beden Tablosu</span>
-            </a>
-            <a href="#">
-              <i className="bi bi-share"></i>
-              <span>Ürünü Paylaş</span>
-            </a>
           </div>
         </div>
       </form>

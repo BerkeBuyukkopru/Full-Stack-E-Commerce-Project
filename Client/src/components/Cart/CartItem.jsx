@@ -20,7 +20,7 @@ const CartItem = ({ cartItem }) => {
       <td>{cartItem.size ? cartItem.size.toUpperCase() : "-"}</td>
       <td>{cartItem.price.toFixed(2)} TL</td>
       <td className="product-quantity">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px' }}>
           <Button
             type="primary"
             shape="circle"

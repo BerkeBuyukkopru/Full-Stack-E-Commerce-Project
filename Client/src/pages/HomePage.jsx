@@ -11,8 +11,8 @@ const HomePage = () => {
     <React.Fragment>
       <Sliders />
       <Categories />
-      <Products />
-      <Blogs />
+      <Products isHome={true} />
+      <Blogs isHome={true} />
       <FooterPromotion/>
     </React.Fragment>
   );

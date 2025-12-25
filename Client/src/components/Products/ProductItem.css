@@ -18,7 +18,12 @@
     width: 100%;
     height: 100%;
     object-fit: cover; /* Görseli orantılı sığdır */
+    padding: 10px; /* Space around image */
     transition: 0.3s ease-in-out all;
+  }
+
+  .products .product-item:hover img {
+    transform: scale(1.1);
   }
   
   .products .product-item .img1:hover {

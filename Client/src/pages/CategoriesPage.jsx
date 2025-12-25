@@ -1,7 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { message, Spin } from "antd";
+import CategoryItem from "../components/Categories/CategoryItem"; // Import CategoryItem
 import "./CategoriesPage.css";
+// We need to ensure the parent 'categories' class is present for styling to work, or import Categories.css if needed.
+// Based on CategoryItem.css, styles differ if inside .categories.
+// Let's assume we can add 'categories' class to the wrapper.
 
 const CategoriesPage = () => {
   const [categories, setCategories] = useState([]);
@@ -35,22 +39,19 @@ const CategoriesPage = () => {
   if (loading) return <Spin size="large" style={{ display: "block", margin: "100px auto" }} />;
 
   return (
-    <div className="categories-page container">
+    <div className="categories-page container categories"> {/* Added 'categories' class for styling */}
       {(!selectedGender || selectedGender === "Man") && (
         <div className="gender-section">
           <h2 className="section-title">Erkek</h2>
-          <div className="category-grid">
+          <ul className="category-list"> {/* Used ul.category-list to match Homepage structure */}
             {menCategories.map(item => (
-              <Link 
-                  to={`/shop?gender=Man&categoryId=${item._id || item.id}`} 
-                  key={item._id || item.id} 
-                  className="category-card"
-              >
-                <img src={item.img} alt={item.name} />
-                <span>{item.name}</span>
-              </Link>
+              <CategoryItem 
+                key={item._id || item.id} 
+                category={item}
+                forceLink={`/shop?gender=Man&categoryId=${item._id || item.id}`}
+              />
             ))}
-          </div>
+          </ul>
         </div>
       )}
 
@@ -59,18 +60,15 @@ const CategoriesPage = () => {
       {(!selectedGender || selectedGender === "Woman") && (
         <div className="gender-section">
           <h2 className="section-title">Kadın</h2>
-          <div className="category-grid">
+           <ul className="category-list">
             {womenCategories.map(item => (
-              <Link 
-                  to={`/shop?gender=Woman&categoryId=${item._id || item.id}`} 
-                  key={item._id || item.id} 
-                  className="category-card"
-              >
-                <img src={item.img} alt={item.name} />
-                <span>{item.name}</span>
-              </Link>
+              <CategoryItem 
+                key={item._id || item.id} 
+                category={item}
+                forceLink={`/shop?gender=Woman&categoryId=${item._id || item.id}`}
+              />
             ))}
-          </div>
+          </ul>
         </div>
       )}
     </div>
