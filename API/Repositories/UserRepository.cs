@@ -1,5 +1,6 @@
 using API.Models;
 using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 
 namespace API.Repositories
 {
@@ -41,6 +42,39 @@ namespace API.Repositories
         public async Task UpdateAsync(string id, User updatedUser)
         {
             await _users.ReplaceOneAsync(user => user.Id == id, updatedUser);
+        }
+        public async Task AddAddressAsync(string userId, Address address)
+        {
+            var filter = Builders<User>.Filter.Eq(u => u.Id, userId);
+            var update = Builders<User>.Update.Push(u => u.Addresses, address);
+            await _users.UpdateOneAsync(filter, update);
+        }
+
+        public async Task DeleteAddressAsync(string userId, Guid addressId)
+        {
+            var filter = Builders<User>.Filter.Eq(u => u.Id, userId);
+            var update = Builders<User>.Update.PullFilter(u => u.Addresses, a => a.Id == addressId);
+            await _users.UpdateOneAsync(filter, update);
+        }
+
+        public async Task UpdateAddressAsync(string userId, Address address)
+        {
+            var filter = Builders<User>.Filter.And(
+                Builders<User>.Filter.Eq(u => u.Id, userId),
+                Builders<User>.Filter.ElemMatch(u => u.Addresses, a => a.Id == address.Id)
+            );
+
+            var update = Builders<User>.Update
+                .Set(u => u.Addresses.FirstMatchingElement().Title, address.Title)
+                .Set(u => u.Addresses.FirstMatchingElement().Name, address.Name)
+                .Set(u => u.Addresses.FirstMatchingElement().Surname, address.Surname)
+                .Set(u => u.Addresses.FirstMatchingElement().Phone, address.Phone)
+                .Set(u => u.Addresses.FirstMatchingElement().City, address.City)
+                .Set(u => u.Addresses.FirstMatchingElement().District, address.District)
+                .Set(u => u.Addresses.FirstMatchingElement().Neighborhood, address.Neighborhood)
+                .Set(u => u.Addresses.FirstMatchingElement().AddressDetail, address.AddressDetail);
+
+            await _users.UpdateOneAsync(filter, update);
         }
     }
 }

@@ -32,6 +32,8 @@ namespace API.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
+        public List<Address> Addresses { get; set; } = new List<Address>();
+
         public List<FavoriteItem> Favorites { get; set; } = new List<FavoriteItem>();
     }
 
