@@ -129,3 +129,46 @@ input[type="number"]::-webkit-inner-spin-button {
 .slick-list {
   margin: 0 -10px;
 }
+
+.address-radio-hover:hover {
+  border-color: black !important;
+}
+
+/* Ant Design Overrides */
+.ant-input:hover,
+.ant-input:focus,
+.ant-input-focused {
+  border-color: black !important;
+  box-shadow: none !important;
+}
+
+.ant-btn-primary {
+  background-color: black !important;
+  border-color: black !important;
+}
+
+.ant-btn-primary:hover {
+  background-color: #333 !important; /* Slightly lighter black/gray */
+  border-color: #333 !important;
+}
+
+.ant-radio-wrapper-checked .ant-radio-inner {
+  border-color: black !important;
+  background-color: black !important;
+}
+
+.ant-radio-wrapper:hover .ant-radio-inner {
+  border-color: black !important;
+}
+
+.ant-radio-checked .ant-radio-inner:after {
+  background-color: white !important;
+}
+
+/* Remove blue halo shadow from inputs */
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused,
+.ant-input-affix-wrapper:hover {
+    border-color: black !important;
+    box-shadow: none !important;
+}
