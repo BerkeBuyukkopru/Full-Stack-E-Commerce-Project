@@ -22,6 +22,8 @@ namespace API.Dtos
         public string UserImg { get; set; } = string.Empty; // For display
         public string TargetId { get; set; } = string.Empty;
         public string TargetType { get; set; } = string.Empty;
+        public string TargetName { get; set; } = string.Empty; // Product Name or Blog Title
+        public string TargetImage { get; set; } = string.Empty; // Product Image or Blog Image
 
         public string Comment { get; set; } = string.Empty;
         public int Rating { get; set; }

@@ -46,7 +46,7 @@ builder.Services.AddSingleton<ReviewRepository>();
 builder.Services.AddHostedService<OrderExpirationService>();
 
 // Token oluşturma servisi
-builder.Services.AddSingleton<ITokenService, TokenService>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 
 // --- 4. JWT Kimlik Doğrulama Yapılandırması ---

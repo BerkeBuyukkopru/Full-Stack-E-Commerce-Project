@@ -1,4 +1,5 @@
 import { useEffect, useState, useContext } from "react";
+import "./AdminReviews.css";
 import { Table, message, Popconfirm, Button, Spin, Tag, Rate } from "antd";
 import { DeleteOutlined, DownOutlined, UpOutlined } from "@ant-design/icons";
 import { AuthContext } from "../../../context/AuthContext";
@@ -17,9 +18,10 @@ const ExpandableComment = ({ comment }) => {
         <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
             <span style={{ 
                 display: "block",
-                maxWidth: expanded ? "none" : "300px", 
+                maxWidth: "300px", 
                 whiteSpace: expanded ? "normal" : "nowrap", 
-                overflow: "hidden", 
+                overflow: expanded ? "auto" : "hidden",
+                maxHeight: expanded ? "100px" : "auto", 
                 textOverflow: "ellipsis",
                 textAlign: "left"
             }}>
@@ -82,20 +84,46 @@ const AdminReviews = () => {
 
     const columns = [
         {
+            title: "Görsel",
+            dataIndex: "targetImage",
+            key: "targetImage",
+            render: (imgSrc) => (
+               <img 
+                    src={imgSrc || "/default-product.png"} 
+                    alt="Target" 
+                    style={{ width: "50px", height: "50px", objectFit: "cover", borderRadius: "5px" }}
+                    onError={(e) => { e.target.onerror = null; e.target.src = "/default-product.png"; }}
+                />
+            )
+        },
+        {
+            title: "Hedef",
+            dataIndex: "targetName", // Changed from targetType to targetName
+            key: "targetName",
+            render: (text, record) => (
+                <div style={{ display: "flex", flexDirection: "column" }}>
+                    <strong style={{ fontSize: "14px", color: "#333" }}>{text || "İsimsiz"}</strong>
+                    <div style={{ marginTop: "4px" }}>
+                        <Tag color={record.targetType === "Product" ? "blue" : "green"}>
+                            {record.targetType === "Product" ? "Ürün" : "Blog"}
+                         </Tag>
+                         <a 
+                            href={record.targetType === "Product" ? `/product/${record.targetId}` : `/blog/${record.targetId}`} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="review-link"
+                         >
+                            Sayfaya Git
+                         </a>
+                    </div>
+                </div>
+            )
+        },
+        {
             title: "Kullanıcı",
             dataIndex: "userName",
             key: "userName",
             render: (text) => <span>{text}</span>
-        },
-        {
-            title: "Hedef",
-            dataIndex: "targetType",
-            key: "targetType",
-            render: (text) => (
-                <Tag color={text === "Product" ? "blue" : "green"}>
-                    {text === "Product" ? "Ürün" : "Blog"}
-                </Tag>
-            )
         },
         {
             title: "Puan",

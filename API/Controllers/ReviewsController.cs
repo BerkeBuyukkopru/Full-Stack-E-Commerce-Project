@@ -13,13 +13,15 @@ namespace API.Controllers
     {
         private readonly ReviewRepository _reviewRepository;
         private readonly ProductRepository _productRepository;
+        private readonly BlogRepository _blogRepository;
         private readonly UserRepository _userRepository;
 
-        public ReviewsController(ReviewRepository reviewRepository, ProductRepository productRepository, UserRepository userRepository)
+        public ReviewsController(ReviewRepository reviewRepository, ProductRepository productRepository, UserRepository userRepository, BlogRepository blogRepository)
         {
             _reviewRepository = reviewRepository;
             _productRepository = productRepository;
             _userRepository = userRepository;
+            _blogRepository = blogRepository;
         }
 
         [HttpPost]
@@ -75,7 +77,9 @@ namespace API.Controllers
 
             var reviews = await _reviewRepository.GetByUserIdAsync(userId);
              // We might want to enrich this with Product Name / Blog Title in future, but for now basic info
-            return Ok(reviews);
+             // Updated to full enrichment for consistency
+            var response = await MapToDto(reviews);
+            return Ok(response);
         }
 
         [HttpGet("admin/all")]
@@ -138,6 +142,28 @@ namespace API.Controllers
                 // Fetch user info
                 var user = await _userRepository.GetByIdAsync(r.UserId);
                 
+                string targetName = "";
+                string targetImage = "";
+
+                if (r.TargetType == "Product")
+                {
+                    var product = await _productRepository.GetByIdAsync(r.TargetId);
+                    if (product != null)
+                    {
+                        targetName = product.Name;
+                        targetImage = product.Img != null && product.Img.Count > 0 ? product.Img[0] : "";
+                    }
+                }
+                else if (r.TargetType == "Blog")
+                {
+                    var blog = await _blogRepository.GetByIdAsync(r.TargetId);
+                     if (blog != null)
+                    {
+                        targetName = blog.Title; // Removing HTML tags later in frontend might be safer, but title should be clean
+                        targetImage = blog.ImageUrl;
+                    }
+                }
+
                 dtos.Add(new ReviewResponseDto
                 {
                     Id = r.Id!,
@@ -146,6 +172,8 @@ namespace API.Controllers
                     UserImg = user?.AvatarUrl ?? "/default-avatar.png",
                     TargetId = r.TargetId,
                     TargetType = r.TargetType,
+                    TargetName = targetName,
+                    TargetImage = targetImage,
                     Comment = r.Comment,
                     Rating = r.Rating,
                     CreatedAt = r.CreatedAt
