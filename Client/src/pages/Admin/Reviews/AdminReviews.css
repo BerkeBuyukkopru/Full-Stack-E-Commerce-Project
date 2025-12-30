@@ -1,0 +1,10 @@
+.review-link {
+    font-size: 12px;
+    margin-left: 5px;
+    color: #000;
+    transition: color 0.3s ease;
+}
+
+.review-link:hover {
+    color: darkred;
+}

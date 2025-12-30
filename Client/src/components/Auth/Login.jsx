@@ -85,9 +85,6 @@ const Login = () => {
         <p className="login">
           <button className="btn btn-sm">Giriş Yap</button>
         </p>
-        <a href="#" className="form-link">
-          Şifremi Unuttum
-        </a>
       </form>
     </div>
   );

@@ -74,7 +74,7 @@ const UserOrders = () => {
                         <div key={order.id} style={{ border: '1px solid #f0f0f0', borderRadius: '8px', padding: '20px', background: '#fff' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px', marginBottom: '15px' }}>
                                 <div>
-                                    <h4 style={{ margin: 0 }}>Sipariş No: <span style={{ fontWeight: 'normal' }}>{order.id.substring(0, 8)}...</span></h4>
+                                    <h4 style={{ margin: 0 }}>Sipariş No: <span style={{ fontWeight: 'normal' }}>{order.orderNumber}</span></h4>
                                     <div style={{ color: '#888', fontSize: '12px' }}>{formatDate(order.createdAt)}</div>
                                 </div>
                                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -119,8 +119,8 @@ const UserOrders = () => {
                                                         <div>{order.cargoFee.toFixed(2)} TL</div>
                                                     </div>
                                                 )}
-                                                {order.cargoCompany && (
-                                                    <div style={{ fontSize: '12px', color: '#888', textAlign: 'right' }}>Kargo Firması: {order.cargoCompany}</div>
+                                                {order.cargoCompanyName && (
+                                                    <div style={{ fontSize: '12px', color: '#888', textAlign: 'right' }}>Kargo Firması: {order.cargoCompanyName}</div>
                                                 )}
                                             </div>
                                         </div>
