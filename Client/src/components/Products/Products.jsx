@@ -1,26 +1,72 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ProductItem from "./ProductItem";
+import SortSelect from "./SortSelect";
+import FilterSidebar from "./FilterSidebar";
 import "./Products.css";
-import { message } from "antd";
+import { message, Button } from "antd";
+import { FilterOutlined } from "@ant-design/icons";
 
 const Products = ({ isHome }) => {
   const [products, setProducts] = useState([]);
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const gender = searchParams.get("gender");
-  const categoryId = searchParams.get("categoryId");
+  // State
+  const [loading, setLoading] = useState(true);
+  const [filterVisible, setFilterVisible] = useState(false);
+
+  // Derive state from URL
+  const sortOption = searchParams.get("sort") || "newest";
+  
+  // Parse filters from URL
+  const filters = {
+      categories: searchParams.getAll("categories"),
+      genders: searchParams.getAll("genders"),
+      minPrice: searchParams.get("minPrice") ? Number(searchParams.get("minPrice")) : undefined,
+      maxPrice: searchParams.get("maxPrice") ? Number(searchParams.get("maxPrice")) : undefined,
+      colors: searchParams.getAll("colors"),
+      sizes: searchParams.getAll("sizes")
+  };
+
+  // Special handling for legacy/direct link params
+  const genderParam = searchParams.get("gender");
+  const categoryParam = searchParams.get("categoryId");
+
+  // Merge direct params into filters if not present
+  if (genderParam && !filters.genders.includes(genderParam)) filters.genders.push(genderParam);
+  if (categoryParam && !filters.categories.includes(categoryParam)) filters.categories.push(categoryParam);
+
 
   useEffect(() => {
     const fetchProducts = async () => {
+      setLoading(true);
       try {
         let url = `${apiUrl}/product`;
         
         // Query params oluşturma
         const params = new URLSearchParams();
-        if (gender && !isHome) params.append("gender", gender);
-        if (categoryId && !isHome) params.append("categoryId", categoryId);
+
+        // 1. URL'den gelen temel filtreler
+        if (filters.categories && filters.categories.length > 0) {
+            filters.categories.forEach(c => params.append("Categories", c));
+        }
+        if (filters.genders && filters.genders.length > 0) {
+            filters.genders.forEach(g => params.append("Genders", g));
+        }
+        if (filters.colors && filters.colors.length > 0) {
+            filters.colors.forEach(c => params.append("Colors", c));
+        }
+        if (filters.sizes && filters.sizes.length > 0) {
+            filters.sizes.forEach(s => params.append("Sizes", s));
+        }
+        
+        if (filters.minPrice !== undefined) params.append("MinPrice", filters.minPrice);
+        if (filters.maxPrice !== undefined) params.append("MaxPrice", filters.maxPrice);
+
+        // Sort
+        params.append("SortBy", sortOption);
+
 
         if (params.toString()) {
             url += `?${params.toString()}`;
@@ -30,11 +76,8 @@ const Products = ({ isHome }) => {
 
         if (response.ok) {
           const data = await response.json();
-          // isHome ise "En Yeniler" mantığı: Ters çevir (varsayılan mongo ID sırası genelde eklendiği tarihtir) ve ilk 4'ü al
           if (isHome) {
-              // Eğer backend zaten "createdAt" sıralı dönüyorsa direkt reverse, değilse id'ye göre basit bir varsayım veya client-side sort
-              // MongoDB objectId genelde zamana göre artar, bu yüzden tersten sondan eklenenler gelir.
-              const newestProducts = [...data].reverse().slice(0, 4);
+              const newestProducts = [...data].slice(0, 4); // Backend zaten newest dönebilir veya burada da kesebiliriz.
               setProducts(newestProducts);
           } else {
               setProducts(data);
@@ -44,18 +87,66 @@ const Products = ({ isHome }) => {
         }
       } catch (error) {
         console.log("Veri hatası:", error);
+      } finally {
+        setLoading(false);
       }
     };
-    fetchProducts();
-  }, [apiUrl, gender, categoryId, isHome]);
+    
+    // isHome durumunda filtreleri yoksayabiliriz veya sadece sort'u kullanabiliriz.
+    // Anasayfada genelde filtre olmaz, sadece "En Yeniler" gelir.
+    if (isHome) {
+        // Fetch logic for home (maybe existing simple logic is better to avoid sidebar overhead?)
+        // Let's keep using the new endpoint but with minimal params.
+        const fetchHome = async () => {
+             const response = await fetch(`${apiUrl}/product?SortBy=newest`);
+             if (response.ok) {
+                 const data = await response.json();
+                 setProducts(data.slice(0, 4));
+             }
+        }
+        fetchHome();
+    } else {
+        fetchProducts();
+    }
+    
+  // Dependencies: Re-run when URL params change
+  // We use JSON.stringify for complex objects like filters to trigger effect only when deep values change
+  }, [apiUrl, sortOption, isHome, JSON.stringify(filters)]);
+
+  const handleFilterApply = (newFilters) => {
+      // Create new params object from current state to preserve other params if needed, 
+      // but usually filtering replaces the view context.
+      const params = new URLSearchParams();
+
+      if (newFilters.categories) newFilters.categories.forEach(c => params.append("categories", c));
+      if (newFilters.genders) newFilters.genders.forEach(g => params.append("genders", g));
+      if (newFilters.colors) newFilters.colors.forEach(c => params.append("colors", c));
+      if (newFilters.sizes) newFilters.sizes.forEach(s => params.append("sizes", s));
+      
+      if (newFilters.minPrice !== undefined) params.set("minPrice", newFilters.minPrice);
+      if (newFilters.maxPrice !== undefined) params.set("maxPrice", newFilters.maxPrice);
+      
+      // Preserve Sort
+      params.set("sort", sortOption);
+
+      setSearchParams(params);
+  };
+
+  const handleSortChange = (value) => {
+      // Preserve current filters, update sort
+      // We can directly clone current searchParams
+      const params = new URLSearchParams(searchParams);
+      params.set("sort", value);
+      setSearchParams(params);
+  };
 
   // Başlık belirleme
   let pageTitle = "Ürünler";
   if (isHome) {
       pageTitle = "En Yeniler";
-  } else if (gender === "Man") {
+  } else if (filters.genders.includes("Man")) {
       pageTitle = "Erkek Ürünleri";
-  } else if (gender === "Woman") {
+  } else if (filters.genders.includes("Woman")) {
       pageTitle = "Kadın Ürünleri";
   }
 
@@ -64,11 +155,39 @@ const Products = ({ isHome }) => {
       <div className="container">
         <div className="section-title">
           <h2>{pageTitle}</h2>
+          
+           {!isHome && (
+              <div className="product-actions" style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <Button 
+                    icon={<FilterOutlined />} 
+                    onClick={() => setFilterVisible(true)}
+                    type="default"
+                  >
+                      Filtrele
+                  </Button>
+                  <SortSelect onChange={handleSortChange} value={sortOption} />
+              </div>
+           )}
         </div>
+        
+        <FilterSidebar 
+            visible={filterVisible} 
+            onClose={() => setFilterVisible(false)} 
+            onFilterApply={handleFilterApply}
+            initialFilters={filters}
+        />
         <div className="product-wrapper product-grid">
-            {products.map((product) => (
-              <ProductItem productItem={product} key={product._id || product.id} />
-            ))}
+            {products.length > 0 ? (
+                products.map((product) => (
+                    <ProductItem productItem={product} key={product._id || product.id} />
+                ))
+            ) : (
+                !loading && (
+                    <div className="no-products-found" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '50px', fontSize: '18px', color: '#555' }}>
+                        Seçtiğiniz Kriterlere Uygun Ürün Bulunamadı.
+                    </div>
+                )
+            )}
         </div>
       </div>
     </section>
