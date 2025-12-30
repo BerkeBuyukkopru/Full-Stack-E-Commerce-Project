@@ -54,11 +54,11 @@ public class ProductController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<Product>>> Get([FromQuery] string? gender, [FromQuery] string? categoryId)
+    public async Task<ActionResult<List<Product>>> Get([FromQuery] ProductFilterParams filterParams)
     {
         try
         {
-            var products = await _productRepository.GetAllAsync(gender, categoryId);
+            var products = await _productRepository.GetAllAsync(filterParams);
 
             return Ok(products);
         }
@@ -66,6 +66,21 @@ public class ProductController : ControllerBase
         {
             Console.WriteLine(ex.Message);
 
+            return StatusCode(500, new { error = "Internal server error." });
+        }
+    }
+
+    [HttpGet("filter-options")]
+    public async Task<IActionResult> GetFilterOptions()
+    {
+        try
+        {
+             var options = await _productRepository.GetFilterOptionsAsync();
+             return Ok(options);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine(ex.Message);
             return StatusCode(500, new { error = "Internal server error." });
         }
     }

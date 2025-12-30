@@ -1,0 +1,32 @@
+.filter-sidebar .ant-drawer-body {
+    padding: 24px;
+}
+
+.filter-group {
+    margin-bottom: 24px;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 16px;
+}
+
+.filter-group:last-child {
+    border-bottom: none;
+}
+
+.filter-group h5.ant-typography {
+    margin-bottom: 12px;
+}
+
+.vertical-checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.price-range-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 14px;
+    color: #555;
+    font-weight: 500;
+}

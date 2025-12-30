@@ -52,7 +52,7 @@ const ProductItem = ({ productItem }) => {
           <RatingBadge rating={productItem.rating || 0} reviewCount={productItem.reviewCount || 0} showCount={false} />
           <strong className="new-price">
             {productItem.productPrice.discount > 0
-              ? productItem.productPrice.discount.toFixed(2)
+              ? discountedPrice.toFixed(2)
               : productItem.productPrice.current.toFixed(2)}
             {" TL"}
           </strong>

@@ -1,6 +1,9 @@
 using API.Models; // IDatabaseSettings ve Product Model'i için
 using MongoDB.Bson;
 using MongoDB.Driver;
+using API.Dtos;
+using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace API.Repositories
 {
@@ -23,41 +26,165 @@ namespace API.Repositories
             return product;
         }
 
-        public async Task<List<Product>> GetAllAsync(string? gender = null, string? categoryId = null)
+        public async Task<List<Product>> GetAllAsync(ProductFilterParams filterParams)
         {
+            // --- Aggregation Pipeline for Filtering with Calculated Price ---
+            
+            // 1. Basic Filters (Category, Gender, Colors, Sizes) - Same as before
             var builder = Builders<Product>.Filter;
             var filter = builder.Empty;
 
-            if (!string.IsNullOrEmpty(gender))
+            if (filterParams.Categories != null && filterParams.Categories.Any())
+                filter &= builder.In(p => p.Category, filterParams.Categories);
+
+            if (filterParams.Genders != null && filterParams.Genders.Any())
             {
-                // "Unisex" products should probably be returned for both, or explicit match?
-                // For now, let's do strict match OR "Unisex" if user is browsing specifically "Man" or "Woman".
-                // If filtering by "Unisex", only "Unisex".
-                // But usually, if I click "Man", I want "Man" AND "Unisex".
-                // Let's implement strict filtering first, user requested "Erkek için eklenenler" (Men's category).
-                // Actually they said "Unisex" too? Let's check requirements.
-                // "Kategori oluşturma ... erkek, kadın ya da her iki cinsiyete de ait olup olmadığı seçilebilmeli." -> "Unisex"
-                // "Erkek başlığı altında ... yalnızca erkekler için eklenmiş ... ürünler listelenmeli" -> This implies matching gender.
-                // However, Unisex items usually appear in both.
-                // Let's support multiple values or just strict match.
-                // Simpler approach: Strict match or "Unisex" included.
-                // Let's start with equality check.
-                if (gender != "Unisex")
-                {
-                     filter &= (builder.Eq(p => p.Gender, gender) | builder.Eq(p => p.Gender, "Unisex"));
-                }
-                else
-                {
-                     filter &= builder.Eq(p => p.Gender, "Unisex");
-                }
+                 if (filterParams.Genders.Contains("Man") || filterParams.Genders.Contains("Woman"))
+                     filter &= builder.In(p => p.Gender, filterParams.Genders);
+                 else
+                    filter &= builder.In(p => p.Gender, filterParams.Genders);
             }
 
-            if (!string.IsNullOrEmpty(categoryId))
+            if (filterParams.Colors != null && filterParams.Colors.Any())
+                filter &= builder.AnyIn(p => p.Colors, filterParams.Colors);
+
+            if (filterParams.Sizes != null && filterParams.Sizes.Any())
             {
-                filter &= builder.Eq(p => p.Category, categoryId);
+                var sizeFilterBuilder = Builders<ProductSize>.Filter;
+                var sizeFilter = sizeFilterBuilder.In(s => s.Size, filterParams.Sizes) & sizeFilterBuilder.Gt(s => s.Stock, 0);
+                filter &= builder.ElemMatch(p => p.Sizes, sizeFilter);
             }
 
-            return await _products.Find(filter).ToListAsync();
+            // Start Aggregation
+            // Note: We cannot use standard 'builder' for FinalPrice filtering yet because it doesn't exist in the document.
+            // We match basic filters first to reduce working set.
+            var initialAggregate = _products.Aggregate().Match(filter);
+
+            // 2. Add 'FinalPrice' Field
+            // Logic: if Discount > 0 => Current - (Current * Discount / 100) else Current
+            // We use BsonDocument projection for flexibility
+            var addFieldsStage = new BsonDocument("$addFields", new BsonDocument
+            {
+                { "FinalPrice", new BsonDocument
+                    {
+                        { "$cond", new BsonArray
+                            {
+                                new BsonDocument("$gt", new BsonArray { "$ProductPrice.Discount", 0 }),
+                                new BsonDocument("$subtract", new BsonArray
+                                {
+                                    "$ProductPrice.Current",
+                                    new BsonDocument("$multiply", new BsonArray
+                                    {
+                                        "$ProductPrice.Current",
+                                        new BsonDocument("$divide", new BsonArray { "$ProductPrice.Discount", 100 })
+                                    })
+                                }),
+                                "$ProductPrice.Current"
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Change pipeline type to BsonDocument
+            var aggregateWithPrice = initialAggregate.AppendStage<BsonDocument>(addFieldsStage);
+
+            // 3. Price Filtering (on FinalPrice)
+            if (filterParams.MinPrice.HasValue)
+            {
+                aggregateWithPrice = aggregateWithPrice.Match(new BsonDocument("FinalPrice", new BsonDocument("$gte", filterParams.MinPrice.Value)));
+            }
+            if (filterParams.MaxPrice.HasValue)
+            {
+                aggregateWithPrice = aggregateWithPrice.Match(new BsonDocument("FinalPrice", new BsonDocument("$lte", filterParams.MaxPrice.Value)));
+            }
+            
+            // 4. Sorting
+            // Re-map string SortBy to BsonDocument sort definition
+            BsonDocument sortDef;
+            switch (filterParams.SortBy)
+            {
+                case "price_asc":
+                    sortDef = new BsonDocument("FinalPrice", 1);
+                    break;
+                case "price_desc":
+                    sortDef = new BsonDocument("FinalPrice", -1);
+                    break;
+                case "newest":
+                    sortDef = new BsonDocument("CreatedAt", -1);
+                    break;
+                case "a_z":
+                    sortDef = new BsonDocument("Name", 1);
+                    break;
+                case "z_a":
+                    sortDef = new BsonDocument("Name", -1);
+                    break;
+                case "rating":
+                    sortDef = new BsonDocument("Rating", -1);
+                    break;
+                default:
+                    sortDef = new BsonDocument("CreatedAt", -1);
+                    break;
+            }
+            aggregateWithPrice = aggregateWithPrice.Sort(sortDef);
+
+            // 5. Final Projection & Materialization
+            // The aggregation returns BsonDocuments (with added FinalPrice). 
+            // We need to map back to 'Product' objects. BsonSerializer.Deserialize or simple As<Product>.
+            // Since 'FinalPrice' is extra, ignoring extra elements in model is key (already done with [BsonIgnoreExtraElements]).
+            
+            return await aggregateWithPrice.As<Product>().ToListAsync();
+        }
+
+        // --- Aggregation for Dynamic Filter Options ---
+        public async Task<Dictionary<string, object>> GetFilterOptionsAsync()
+        {
+            // 1. Get All Categories (Distinct) - Actually Categories are IDs, maybe we need counts?
+            // Let's just return distinct values present in Products.
+            var categories = await _products.Distinct(p => p.Category, Builders<Product>.Filter.Empty).ToListAsync();
+
+            // 2. Get All Genders
+            var genders = await _products.Distinct(p => p.Gender, Builders<Product>.Filter.Empty).ToListAsync();
+
+            // 3. Get Min/Max Price
+            // 3. Get Min/Max Price (Calculated based on FinalPrice)
+            var priceStats = await _products.Aggregate()
+                .Project(p => new 
+                { 
+                    FinalPrice = p.ProductPrice.Discount > 0 
+                        ? p.ProductPrice.Current - (p.ProductPrice.Current * (decimal)p.ProductPrice.Discount / 100) 
+                        : p.ProductPrice.Current 
+                })
+                .Group(p => 1, g => new
+                { 
+                    MinPrice = g.Min(p => p.FinalPrice), 
+                    MaxPrice = g.Max(p => p.FinalPrice) 
+                })
+                .FirstOrDefaultAsync();
+
+            // 4. Get All Colors (Unwind colors array then distinct)
+            var colors = await _products.Aggregate()
+                .Unwind(p => p.Colors)
+                .Group(new BsonDocument { { "_id", "$Colors" } })
+                .ToListAsync();
+            var colorList = colors.Select(c => c["_id"].AsString).OrderBy(c=>c).ToList();
+
+            // 5. Get All Sizes (Unwind sizes array then distinct)
+            var sizes = await _products.Aggregate()
+                .Unwind(p => p.Sizes)
+                .Group(new BsonDocument { { "_id", "$Sizes.Size" } })
+                .ToListAsync();
+             var sizeList = sizes.Select(s => s["_id"].AsString).OrderBy(s => s).ToList(); // Custom sort might be needed for sizes (S, M, L..)
+
+             return new Dictionary<string, object>
+             {
+                 { "categories", categories },
+                 { "genders", genders },
+                 { "minPrice", priceStats != null ? priceStats.MinPrice : 0 },
+                 { "maxPrice", priceStats != null ? priceStats.MaxPrice : 0 },
+                 { "colors", colorList },
+                 { "sizes", sizeList }
+             };
         }
         public async Task<Product?> GetByIdAsync(string id)
         {
