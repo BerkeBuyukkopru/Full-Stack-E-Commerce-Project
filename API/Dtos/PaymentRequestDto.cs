@@ -5,6 +5,7 @@ namespace API.Dtos
         public UserDto? User { get; set; }
         public API.Models.Address? Address { get; set; }
         public decimal CargoFee { get; set; }
+        public string CargoCompanyName { get; set; } = string.Empty;
         public List<BasketItemDto> BasketItems { get; set; } = new();
         public decimal TotalPrice { get; set; }
         

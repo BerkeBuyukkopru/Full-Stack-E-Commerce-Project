@@ -43,7 +43,8 @@ namespace API.Controllers
                 BasketId = basketId,
                 Status = "Pending",
                 Address = paymentRequest.Address,
-                CargoFee = paymentRequest.CargoFee // Save CargoFee separately
+                CargoFee = paymentRequest.CargoFee, // Save CargoFee separately
+                CargoCompanyName = paymentRequest.CargoCompanyName
             };
             await _orderRepository.CreateAsync(newOrder);
 
