@@ -28,22 +28,6 @@ const CartCoupon = () => {
       const data = await res.json();
       const discountPercent = data.discountPercent;
 
-      const updatedCartItems = cartItems.map((item) => {
-        const currentPrice = item.productPrice.current;
-        const discountAmount = currentPrice * (discountPercent / 100);
-        const newPrice = currentPrice - discountAmount;
-
-        return {
-          ...item,
-          price: newPrice,
-          productPrice: {
-            ...item.productPrice,
-            current: newPrice,
-          },
-        };
-      });
-
-      setCartItems(updatedCartItems);
       setAppliedCoupon(data); // ✨ Kupon nesnesini kaydederek sistemi kilitliyoruz
       message.success(`${couponCode} kuponu ile %${discountPercent} indirim uygulandı.`);
       setCouponCode("");

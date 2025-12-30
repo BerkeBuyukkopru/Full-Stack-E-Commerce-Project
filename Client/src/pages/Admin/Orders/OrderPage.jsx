@@ -1,9 +1,13 @@
-import { Table, message } from "antd";
+import { Table, message, Button, Space } from "antd";
 import { useCallback, useEffect, useState } from "react";
+import { EyeOutlined } from "@ant-design/icons";
+import OrderDetailModal from "./OrderDetailModal";
 
 const OrderPage = () => {
   const [dataSource, setDataSource] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
@@ -47,6 +51,16 @@ const OrderPage = () => {
     fetchOrders();
   }, [fetchOrders]);
 
+  const showModal = (order) => {
+    setSelectedOrder(order);
+    setIsModalOpen(true);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    setSelectedOrder(null);
+  };
+
   const columns = [
     {
       title: "Sipariş No",
@@ -86,16 +100,38 @@ const OrderPage = () => {
       key: "createdAt",
       render: (date) => new Date(date).toLocaleDateString("tr-TR") + " " + new Date(date).toLocaleTimeString("tr-TR"),
     },
+    {
+      title: "İşlem",
+      key: "action",
+      render: (_, record) => (
+        <Space size="middle">
+          <Button 
+            type="primary" 
+            icon={<EyeOutlined />} 
+            onClick={() => showModal(record)}
+          >
+            Detay
+          </Button>
+        </Space>
+      ),
+    },
   ];
 
   return (
-    <Table
-      dataSource={dataSource}
-      columns={columns}
-      rowKey={(record) => record.id || record._id}
-      loading={loading}
-      scroll={{ x: 700 }}
-    />
+    <>
+      <Table
+        dataSource={dataSource}
+        columns={columns}
+        rowKey={(record) => record.id || record._id}
+        loading={loading}
+        scroll={{ x: 700 }}
+      />
+      <OrderDetailModal 
+        open={isModalOpen} 
+        onCancel={handleCancel} 
+        order={selectedOrder} 
+      />
+    </>
   );
 };
 

@@ -38,7 +38,7 @@
   
   .site-main .product-price s {
     font-size: 18px;
-    color: darkgray;
+    color: rgba(139, 0, 0, 0.6);
   }
   
   .site-main .product-price strong {

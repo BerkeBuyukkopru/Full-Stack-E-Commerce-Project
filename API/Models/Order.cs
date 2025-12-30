@@ -26,6 +26,7 @@ namespace API.Models
 
         public Address? Address { get; set; }
         public decimal CargoFee { get; set; }
+        public string CargoCompanyName { get; set; } = string.Empty;
         
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }

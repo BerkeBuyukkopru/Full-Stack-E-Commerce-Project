@@ -40,7 +40,7 @@ const CartTotals = () => {
   
   const navigate = useNavigate();
 
-  const { cartItems } = useContext(CartContext);
+  const { cartItems, appliedCoupon } = useContext(CartContext);
   const { user } = useContext(AuthContext);
 
   const cartItemTotals = cartItems.map((item) => {
@@ -51,9 +51,13 @@ const CartTotals = () => {
     return previousValue + currentValue;
   }, 0);
 
+  const discountAmount = appliedCoupon 
+    ? (subTotals * (appliedCoupon.discountPercent / 100)) 
+    : 0;
+
   const cartTotals = selectedCargo
-    ? (subTotals + selectedCargo.price).toFixed(2)
-    : subTotals.toFixed(2);
+    ? (subTotals - discountAmount + parseFloat(selectedCargo.price)).toFixed(2)
+    : (subTotals - discountAmount).toFixed(2);
 
   const handleCheckout = () => {
     if (!user) {
@@ -90,6 +94,14 @@ const CartTotals = () => {
               <span id="subtotal">{subTotals.toFixed(2)} TL</span>
             </td>
           </tr>
+          {appliedCoupon && (
+            <tr className="cart-subtotal" style={{ color: 'green' }}>
+                <th>İndirim (%{appliedCoupon.discountPercent})</th>
+                <td>
+                    <span id="discount">-{((subTotals * appliedCoupon.discountPercent) / 100).toFixed(2)} TL</span>
+                </td>
+            </tr>
+          )}
           <tr>
             <th>Kargo</th>
             <td>

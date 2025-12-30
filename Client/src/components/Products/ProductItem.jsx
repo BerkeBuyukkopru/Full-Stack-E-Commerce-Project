@@ -45,9 +45,9 @@ const ProductItem = ({ productItem }) => {
         <img src={productItem.img[1]} alt="" className="img2" />
       </div>
       <div className="product-info">
-        <a href="/" className="product-title">
+        <strong className="product-title">
           {productItem.name}
-        </a>
+        </strong>
         <div className="product-prices">
           <RatingBadge rating={productItem.rating || 0} reviewCount={productItem.reviewCount || 0} showCount={false} />
           <strong className="new-price">

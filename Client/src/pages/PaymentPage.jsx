@@ -4,7 +4,7 @@ import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 
 const PaymentPage = () => {
-  const { cartItems } = useContext(CartContext);
+  const { cartItems, appliedCoupon } = useContext(CartContext);
   const { user } = useContext(AuthContext);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,8 +24,14 @@ const PaymentPage = () => {
           0
         );
         
+        // ✨ İndirim Hesaplama
+        
+        const discountAmount = appliedCoupon 
+            ? (cartTotal * (appliedCoupon.discountPercent / 100)) 
+            : 0;
+
         const cargoPrice = selectedCargo ? parseFloat(selectedCargo.price) : 0;
-        const total = cartTotal + cargoPrice; // Include cargo price
+        const total = cartTotal - discountAmount + cargoPrice; // Include cargo price & deduct discount
 
         // 1. Determine Address (Prefer passed address, fallback to fetch)
         let chosenAddress = selectedAddress || null;
@@ -43,6 +49,34 @@ const PaymentPage = () => {
             }
         }
 
+        // ✨ Prepare Basket Items with Rounded Prices to prevent mismatch
+        const basketItems = cartItems.map(item => {
+            const itemOriginalPrice = item.price;
+            let itemDiscountedPrice = appliedCoupon 
+                ? itemOriginalPrice * (1 - appliedCoupon.discountPercent / 100) 
+                : itemOriginalPrice;
+            
+            // Round to 2 decimals strictly to match what Iyzico will likely calculate/see
+            itemDiscountedPrice = Math.round(itemDiscountedPrice * 100) / 100;
+
+            return {
+                Id: item._id || item.id,
+                Name: item.name,
+                Category: "General",
+                Price: itemDiscountedPrice, 
+                Quantity: item.quantity,
+                Size: item.size || "",
+                Color: item.color || "",
+                Img: item.img || []
+            };
+        });
+
+
+        
+        // ✨ Calculate Total from the SUM of rounded items + Cargo
+        // This ensures (Sum of Items) + Cargo === TotalPrice is ALWAYS true mathematically
+        const derivedTotal = basketItems.reduce((acc, item) => acc + (item.Price * item.Quantity), 0) + cargoPrice;
+
         const payload = {
             User: {
                 Id: user._id || user.id,
@@ -51,18 +85,10 @@ const PaymentPage = () => {
                 Email: user.email,
             },
             Address: chosenAddress,
-            BasketItems: cartItems.map(item => ({
-                Id: item._id || item.id,
-                Name: item.name,
-                Category: "General",
-                Price: item.price,
-                Quantity: item.quantity,
-                Size: item.size || "",
-                Color: item.color || "",
-                Img: item.img || []
-            })),
+            BasketItems: basketItems,
             CargoFee: cargoPrice,
-            TotalPrice: total
+            CargoCompanyName: selectedCargo ? selectedCargo.companyName : "",
+            TotalPrice: derivedTotal
         };
 
         const response = await fetch(`${apiUrl}/payment/checkout`, {
@@ -107,7 +133,7 @@ const PaymentPage = () => {
     if(user && cartItems.length > 0) {
         initializePayment();
     }
-  }, [cartItems, user, apiUrl]);
+  }, [cartItems, user, apiUrl, appliedCoupon]);
 
   return (
     <div className="container mx-auto py-20">
