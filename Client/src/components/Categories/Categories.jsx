@@ -68,7 +68,7 @@ const Categories = () => {
         
         <Carousel 
             ref={carouselRef}
-            afterChange={onChange}
+
             slidesToShow={4}
             slidesToScroll={1}
             autoplay

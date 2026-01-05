@@ -183,7 +183,7 @@ namespace API.Controllers
         }
         private string FormatUserDisplayName(User? user)
         {
-            if (user == null) return "Misafir";
+            if (user == null) return "Eski Kullanıcı";
             if (string.IsNullOrEmpty(user.Surname)) return user.Name;
 
             return $"{user.Name} {user.Surname.Trim().Substring(0, 1).ToUpper()}.";

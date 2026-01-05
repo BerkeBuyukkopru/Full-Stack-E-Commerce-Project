@@ -74,7 +74,13 @@ const AddressForm = ({ onSuccess, onCancel, editingAddress, setEditingAddress })
         label="Telefon"
         rules={[{ required: true, message: "Lütfen telefon numaranızı girin!" }]}
       >
-        <Input type="tel" />
+        <Input 
+            maxLength={11} 
+            onChange={(e) => {
+                const numericValue = e.target.value.replace(/[^0-9]/g, '');
+                form.setFieldsValue({ phone: numericValue });
+            }}
+        />
       </Form.Item>
 
       <div style={{ display: "flex", gap: "10px" }}>
