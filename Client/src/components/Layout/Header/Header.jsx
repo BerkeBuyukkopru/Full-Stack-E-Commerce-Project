@@ -136,6 +136,11 @@ const Header = ({ setIsSearchShow }) => {
 
             <div className="header-right">
               <div className="header-right-links">
+                {user?.role === "admin" && (
+                  <Link to="/admin" className="search-button" title="Admin Paneli">
+                    <i className="bi bi-house-lock"></i>
+                  </Link>
+                )}
                 <button
                   className="search-button"
                   onClick={() => setIsSearchShow(true)}

@@ -180,8 +180,8 @@ namespace API.Controllers
             }
             else
             {
-                var errorMessage = checkoutForm.ErrorMessage ?? "Ödeme işlemi başarısız.";
-                return Redirect($"http://localhost:5173/payment/failure?error={errorMessage}");
+                var friendlyErrorMessage = GetUserFriendlyErrorMessage(checkoutForm.ErrorCode, checkoutForm.ErrorMessage);
+                return Redirect($"http://localhost:5173/payment/failure?error={friendlyErrorMessage}");
             }
         }
         [HttpPost("process")]
@@ -285,6 +285,26 @@ namespace API.Controllers
             }
 
             return Ok(new { payment.PaymentStatus, payment.BasketId, payment.ConversationId });
+        }
+        private string GetUserFriendlyErrorMessage(string errorCode, string errorMessage)
+        {
+            switch (errorCode)
+            {
+                case "10051":
+                    return "Kart limitiniz yetersiz.";
+                case "10005":
+                    return "İşlem banka tarafından onaylanmadı.";
+                case "10057":
+                    return "Kartınız e-ticaret işlemlerine kapalı olabilir.";
+                case "10058":
+                    return "Kartınızın son kullanma tarihi dolmuş.";
+                case "10012":
+                    return "Geçersiz işlem.";
+                case "10093":
+                     return "Kartınızın limiti yetersiz.";
+                default:
+                    return !string.IsNullOrEmpty(errorMessage) ? errorMessage : "Ödeme işlemi başarısız oldu.";
+            }
         }
     }
 }
