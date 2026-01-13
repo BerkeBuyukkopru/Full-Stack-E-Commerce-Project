@@ -16,6 +16,7 @@ import {
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import { useState, useContext, useEffect } from "react"; 
 import { AuthContext } from "../context/AuthContext";
+import { SiteContext } from "../context/SiteContext";
 
 
 
@@ -175,6 +176,7 @@ const AdminLayout = ({ children }) => {
   const [collapsed, setCollapsed] = useState(false);
 
   const { user, loading } = useContext(AuthContext);
+  const { siteSettings } = useContext(SiteContext);
 
   const isAdmin = user?.role === "admin";
 
@@ -251,7 +253,7 @@ const AdminLayout = ({ children }) => {
               style={{marginRight: 20, height: '100%', display: 'flex', alignItems: 'center'}}
           >
             <img 
-                src="/logo.png" 
+                src={siteSettings?.logoUrl || "/logo.png"} 
                 alt="Logo" 
                 style={{marginLeft: 20, height: '55px', objectFit: 'cover' }} 
             />

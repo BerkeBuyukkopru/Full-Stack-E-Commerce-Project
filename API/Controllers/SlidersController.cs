@@ -33,6 +33,12 @@ namespace API.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] Slider slider)
         {
+            var existingOrder = await _repository.GetByOrderAsync(slider.Order);
+            if (existingOrder != null)
+            {
+                return BadRequest("Bu sıra numarası zaten kullanımda.");
+            }
+
             await _repository.CreateAsync(slider);
             return CreatedAtAction(nameof(GetById), new { id = slider.Id }, slider);
         }
@@ -42,6 +48,15 @@ namespace API.Controllers
         {
             var existing = await _repository.GetByIdAsync(id);
             if (existing == null) return NotFound();
+
+            if (slider.Order != existing.Order) 
+            {
+                var conflict = await _repository.GetByOrderAsync(slider.Order);
+                if (conflict != null)
+                {
+                    return BadRequest("Bu sıra numarası zaten kullanımda.");
+                }
+            }
 
             slider.Id = id;
             await _repository.UpdateAsync(id, slider);

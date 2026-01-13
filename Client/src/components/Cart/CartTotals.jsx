@@ -105,7 +105,7 @@ const CartTotals = () => {
                {loadingCargo ? <Spin size="small" /> : (
                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
                     <Select
-                        style={{ width: 200 }}
+                        style={{ width: '100%', minWidth: '200px' }}
                         placeholder="Kargo Seçiniz"
                         value={selectedCargo ? selectedCargo.id : undefined}
                         onChange={(value) => {
@@ -115,15 +115,20 @@ const CartTotals = () => {
                         options={cargoCompanies.map(c => ({ 
                             value: c.id, 
                             label: (
-                                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                    {c.logoUrl && (
-                                        <img 
-                                            src={c.logoUrl} 
-                                            alt={c.companyName} 
-                                            style={{ width: '30px', height: '20px', objectFit: 'contain' }} 
-                                        />
-                                    )}
-                                    <span>{c.companyName} - {c.price} TL</span>
+                                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
+                                    <div style={{ display: 'flex', alignItems: 'center', overflow: 'hidden', marginRight: '8px' }}>
+                                        {c.logoUrl && (
+                                            <img 
+                                                src={c.logoUrl} 
+                                                alt={c.companyName} 
+                                                style={{ width: '30px', height: '20px', objectFit: 'contain', flexShrink: 0 }} 
+                                            />
+                                        )}
+                                        <span style={{ marginLeft: 8, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={c.companyName}>
+                                            {c.companyName}
+                                        </span>
+                                    </div>
+                                    <span style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>{c.price} TL</span>
                                 </div>
                             )
                         }))}
