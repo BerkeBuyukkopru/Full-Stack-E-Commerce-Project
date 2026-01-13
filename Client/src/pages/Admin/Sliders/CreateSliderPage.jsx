@@ -21,7 +21,8 @@ const CreateSliderPage = () => {
         message.success("Slider başarıyla oluşturuldu.");
         navigate("/admin/sliders");
       } else {
-        message.error("Oluşturulamadı.");
+        const errorMessage = await response.text(); 
+        message.warning(errorMessage || "Oluşturulamadı.");
       }
     } catch (error) {
       console.error("Hata:", error);

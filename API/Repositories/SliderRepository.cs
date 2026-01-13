@@ -20,6 +20,9 @@ namespace API.Repositories
         public async Task<Slider?> GetByIdAsync(string id) =>
             await _sliders.Find(x => x.Id == id).FirstOrDefaultAsync();
 
+        public async Task<Slider?> GetByOrderAsync(int order) =>
+            await _sliders.Find(x => x.Order == order).FirstOrDefaultAsync();
+
         public async Task CreateAsync(Slider slider) =>
             await _sliders.InsertOneAsync(slider);
 

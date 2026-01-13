@@ -40,7 +40,8 @@ const UpdateSliderPage = () => {
         message.success("Slider güncellendi.");
         navigate("/admin/sliders");
       } else {
-        message.error("Güncelleme başarısız.");
+        const errorMessage = await response.text();
+        message.warning(errorMessage || "Güncelleme başarısız.");
       }
     } catch (error) {
       console.error("Hata:", error);

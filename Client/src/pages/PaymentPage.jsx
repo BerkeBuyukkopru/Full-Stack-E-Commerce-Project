@@ -92,7 +92,12 @@ const PaymentPage = () => {
 
         if (!response.ok) {
           const errorData = await response.json();
-          const errorMessage = errorData.errorMessage || errorData.title || "Ödeme formu yüklenemedi.";
+          let errorMessage = errorData.errorMessage || errorData.title || "Ödeme formu yüklenemedi.";
+
+          if (errorMessage.includes("100,000") || errorMessage.includes("100.000")) {
+             errorMessage = "Sepet tutarınız işlem limitini (100.000 TL) aştığı için ödeme gerçekleştirilemiyor. Lütfen sepetinizi düzenleyip tekrar deneyin.";
+          }
+
           throw new Error(errorMessage);
         }
 
@@ -115,7 +120,7 @@ const PaymentPage = () => {
 
       } catch (err) {
         console.error(err);
-        setError("Ödeme sistemi yüklenirken bir sorun oluştu.");
+        setError(err.message || "Ödeme sistemi yüklenirken bir sorun oluştu.");
       } finally {
         setLoading(false);
       }
