@@ -261,7 +261,7 @@ cd BB-Store-Full-Stack-E-Commerce
 
 ### 2. Configure the API Secrets
 
-The repository intentionally keeps secret values empty. Configure your local secrets with your own values:
+The repository intentionally keeps secret values empty. These values are required for the API to connect to MongoDB, create JWT tokens, and initialize Iyzico sandbox payments. Configure your local secrets with your own values:
 
 ```bash
 dotnet user-secrets set "DatabaseSettings:ConnectionString" "YOUR_MONGODB_CONNECTION_STRING" --project API/API.csproj
@@ -303,7 +303,13 @@ npm install
 
 ### 5. Run the Backend
 
-From the repository root:
+If your terminal is still inside the `Client` folder, go back to the repository root first:
+
+```bash
+cd ..
+```
+
+Then start the API:
 
 ```bash
 dotnet run --project API/API.csproj
@@ -317,7 +323,7 @@ http://localhost:5020
 
 ### 6. Run the Frontend
 
-In another terminal:
+In another terminal, go to the client folder and start Vite:
 
 ```bash
 cd Client
@@ -345,7 +351,7 @@ To use the admin dashboard locally:
 
 The admin seed only runs when there is no existing admin user. If an account already exists with the configured admin email, that user is promoted to `admin` and its password is refreshed from `AdminSeed:Password`. If an admin already exists, the seed process is skipped.
 
-After admin access is ready, catalog data can be created from the admin panel: categories, products, coupons, cargo companies, sliders, site settings, blog posts, and other content.
+After admin access is ready, catalog data can be created from the admin panel: categories, products, coupons, cargo companies, sliders, site settings, blog posts, and other content. A fresh database starts without catalog content until you create it from the admin dashboard.
 
 ---
 
